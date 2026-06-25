@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title>卡片墨水屏</title>
+  <style>
+    :root {
+      --paper: #fefdf8;
+      --stone: #f8f7f4;
+      --stage-gray: #e6dddf;
+      --ink: #1a1815;
+      --muted: #6f6861;
+      --quiet: rgba(26, 24, 21, .08);
+      --accent: #ce643d;
+      --accent-hover: #e8795a;
+      --night: #1b1a16;
+      --night-soft: #30251f;
+      --white: #fffefa;
+      --radius: 2px;
+      --container: 1480px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Outfit", "MiSans", "Noto Sans SC", Arial, sans-serif; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    [hidden] { display: none !important; }
+
+    .logged-in, .workspace { display: none; }
+    body.is-logged-in .logged-in, body.is-logged-in .workspace { display: flex; }
+    body.is-logged-in .workspace { display: block; }
+    body.is-logged-in .logged-out { display: none; }
+    body:not(.is-logged-in) .nav.logged-in { display: none; }
+
+    .site-head {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 20;
+      height: 70px;
+      color: var(--white);
+      transition: background .3s ease, box-shadow .3s ease, color .3s ease;
+    }
+    .site-head:hover, .site-head.solid {
+      color: var(--ink);
+      background: rgba(253, 253, 251, .96);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+      backdrop-filter: blur(12px);
+    }
+    .head-inner { width: min(calc(100% - 40px), var(--container)); height: 70px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .brand { display: inline-flex; align-items: baseline; gap: 10px; white-space: nowrap; }
+    .brand strong { font-size: 16px; font-weight: 700; letter-spacing: .02em; }
+    .brand span { opacity: .62; font-size: 12px; }
+    .top-right { min-width: 0; display: flex; align-items: center; gap: 18px; }
+    .nav { display: flex; align-items: center; gap: 0; overflow-x: auto; scrollbar-width: none; }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav button { min-height: 70px; padding: 0 13px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: inherit; opacity: .74; font-size: 13px; font-weight: 500; letter-spacing: .02em; white-space: nowrap; transition: color .2s ease, opacity .2s ease, border-color .2s ease; }
+    .nav button:hover, .nav button.active { opacity: 1; }
+    .nav button.active { border-bottom-color: var(--accent); color: var(--accent); }
+    .head-button { min-height: 36px; border: 1px solid currentColor; border-radius: var(--radius); padding: 0 15px; background: transparent; color: inherit; font-size: 13px; font-weight: 500; transition: color .2s ease, background .2s ease, border-color .2s ease; white-space: nowrap; }
+    .head-button:hover { border-color: var(--accent); background: var(--accent); color: var(--white); }
+    .account { align-items: center; gap: 9px; }
+    .account-avatar { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: rgba(255, 255, 255, .17); color: inherit; font-size: 12px; font-weight: 700; }
+    .site-head:hover .account-avatar { background: var(--stone); }
+    .account-email { font-size: 12px; opacity: .76; white-space: nowrap; }
+
+    .button { min-width: 120px; min-height: 43px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid currentColor; border-radius: var(--radius); padding: 10px 23px; background: transparent; color: inherit; font-size: 14px; font-weight: 500; transition: transform .2s ease, background .3s ease, border-color .3s ease, color .3s ease; white-space: nowrap; }
+    .button:hover { transform: translateY(-1px); }
+    .button:active { transform: translateY(0); }
+    .button.primary { min-width: 160px; min-height: 49px; border-color: var(--accent); background: var(--accent); color: var(--white); }
+    .button.primary:hover { border-color: var(--accent-hover); background: var(--accent-hover); }
+    .button.light { border-color: rgba(255, 255, 255, .3); color: var(--white); }
+    .button.light:hover { border-color: rgba(255, 255, 255, .62); background: rgba(255, 255, 255, .08); }
+    .text-action { border: 0; padding: 0; background: transparent; color: inherit; font-size: 14px; font-weight: 500; text-align: left; }
+    .text-action:hover { color: var(--accent); }
+
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    .auth-stage, .home-hero {
+      min-height: 100dvh;
+      position: relative;
+      overflow: hidden;
+      background: #5d2511;
+      color: var(--white);
+    }
+    .auth-stage::before, .home-hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(43, 15, 7, .32), transparent 54%); pointer-events: none; }
+    .auth-stage::after, .home-hero::after { content: ""; position: absolute; left: -5vw; right: -5vw; bottom: -25vw; height: 53vw; background: var(--stage-gray); transform: rotate(-5deg); transform-origin: left top; }
+    .auth-inner, .hero-inner { width: min(calc(100% - 80px), var(--container)); min-height: 100dvh; margin: 0 auto; position: relative; z-index: 1; display: grid; grid-template-columns: minmax(280px, .73fr) minmax(420px, 1.27fr); align-items: center; padding: 142px 0 100px; }
+    .auth-copy, .hero-copy { position: relative; z-index: 3; align-self: center; }
+    .overline { display: inline-block; margin-bottom: 22px; padding: 4px 12px; background: rgba(255, 255, 255, .12); color: rgba(255, 255, 255, .82); font-size: 11px; line-height: 1.25; }
+    .auth-copy h1, .hero-copy h1 { max-width: 8ch; margin: 0 0 15px; color: var(--white); font-family: "Playfair Display", "Noto Serif SC", Georgia, serif; font-size: clamp(52px, 6.2vw, 80px); line-height: 1.05; font-weight: 700; }
+    .hero-copy #stageDeviceName { max-width: 620px; font-size: clamp(46px, 4.5vw, 64px); }
+    .auth-copy p, .hero-copy p { max-width: 410px; margin: 0 0 32px; color: rgba(255, 255, 255, .72); font-size: 15px; line-height: 1.65; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .hero-count { position: absolute; right: 0; bottom: 32px; z-index: 3; color: rgba(255,255,255,.65); font-size: 12px; letter-spacing: .1em; }
+
+    .device-scene { min-height: 540px; position: relative; z-index: 2; }
+    .scene-shadow { position: absolute; left: 11%; right: 8%; bottom: 10%; height: 11%; border-radius: 50%; background: rgba(31, 15, 13, .28); filter: blur(17px); transform: rotate(-5deg); }
+    .epaper { position: absolute; width: min(30vw, 330px); aspect-ratio: 4 / 5.8; padding: 14px; border: 10px solid #242221; border-radius: 18px; background: #151515; box-shadow: 0 28px 42px rgba(18, 8, 6, .3); transform-origin: center; }
+    .epaper .screen { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 5px; background: #dedbd5; }
+    .epaper .screen::before { content: ""; position: absolute; width: 166%; height: 26%; left: -34%; top: 34%; background: #282522; opacity: .63; transform: rotate(-31deg); }
+    .epaper .screen::after { content: ""; position: absolute; left: 14%; right: 17%; bottom: 18%; height: 12%; border-top: 7px solid #24211e; border-bottom: 3px solid #24211e; transform: rotate(12deg); }
+    .epaper.back { left: 15%; bottom: 14%; width: min(25vw, 280px); border-color: #403f40; transform: rotate(-11deg); opacity: .94; }
+    .epaper.back .screen { background: #c8c4cd; }
+    .epaper.main { right: 10%; bottom: 4%; transform: rotate(8deg); }
+    .epaper.main .screen { background: #eeece5; }
+    .epaper.main .screen::before { width: 176%; height: 29%; left: -37%; top: 39%; background: #322f2b; opacity: .58; transform: rotate(16deg); }
+    .epaper.main .screen::after { left: 17%; right: 12%; bottom: 17%; height: 14%; border-top-width: 8px; transform: rotate(-8deg); }
+    .auth-links { display: flex; gap: 22px; margin-top: 28px; }
+    .auth-links .text-action { color: rgba(255, 255, 255, .76); }
+    .auth-links .text-action:hover { color: var(--white); }
+
+    .section { padding: 112px 0; }
+    .section-inner { width: min(calc(100% - 40px), var(--container)); margin: 0 auto; }
+    .section-heading { max-width: 620px; margin-bottom: 56px; }
+    .section-heading h2 { margin: 0 0 14px; font-size: 40px; line-height: 1.2; font-weight: 700; }
+    .section-heading p { max-width: 480px; margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
+
+    .devices-section { background: var(--paper); }
+    .device-gallery { display: grid; grid-template-columns: 1.05fr .95fr; gap: 20px; }
+    .device-card { min-height: 460px; position: relative; overflow: hidden; border: 0; border-radius: var(--radius); padding: 42px; color: var(--ink); text-align: left; }
+    .device-card.main { background: #ded0d5; }
+    .device-card.desk { background: #ece0d4; }
+    .device-card::before { content: ""; position: absolute; width: 56%; aspect-ratio: 4 / 5.6; right: 10%; bottom: -13%; border: 9px solid #282526; border-radius: 14px; background: #efede7; box-shadow: 0 20px 35px rgba(38, 26, 23, .22); transform: rotate(-9deg); transition: transform .7s ease; }
+    .device-card::after { content: ""; position: absolute; width: 44%; aspect-ratio: 4 / 5.6; right: 34%; bottom: -5%; border: 8px solid #4a4647; border-radius: 13px; background: #bfb8c5; box-shadow: 0 16px 28px rgba(38, 26, 23, .15); transform: rotate(8deg); transition: transform .7s ease; }
+    .device-card.desk::before { background: #e9e7df; transform: rotate(9deg); }
+    .device-card.desk::after { background: #d1b9a5; transform: rotate(-8deg); }
+    .device-card:hover::before { transform: translateY(-10px) rotate(-6deg); }
+    .device-card.desk:hover::before { transform: translateY(-10px) rotate(6deg); }
+    .device-card:hover::after { transform: translateY(-4px) rotate(11deg); }
+    .device-card.desk:hover::after { transform: translateY(-4px) rotate(-11deg); }
+    .device-card > * { position: relative; z-index: 2; }
+    .device-card .device-label { display: block; margin-bottom: 14px; color: rgba(26,24,21,.6); font-size: 12px; }
+    .device-card h3 { max-width: 8ch; margin: 0 0 11px; font-family: "Playfair Display", "Noto Serif SC", Georgia, serif; font-size: clamp(31px, 3.2vw, 46px); line-height: 1.05; }
+    .device-card p { margin: 0 0 25px; color: rgba(26,24,21,.7); font-size: 14px; }
+    .device-card .button { min-width: 120px; }
+    .device-card.active-device .button { border-color: var(--accent); background: var(--accent); color: var(--white); }
+
+    .workflow-section { background: var(--stone); }
+    .workflow-layout { display: grid; grid-template-columns: .75fr 1.25fr; gap: 64px; align-items: start; }
+    .workflow-layout h2 { margin: 0; max-width: 7ch; font-family: "Playfair Display", "Noto Serif SC", Georgia, serif; font-size: 42px; line-height: 1.12; }
+    .workflow-list { border-top: 1px solid var(--quiet); }
+    .workflow-list button { width: 100%; min-height: 94px; display: grid; grid-template-columns: 150px 1fr 24px; gap: 18px; align-items: center; border: 0; border-bottom: 1px solid var(--quiet); padding: 18px 0; background: transparent; color: var(--ink); text-align: left; }
+    .workflow-list button:hover { color: var(--accent); }
+    .workflow-list strong { font-size: 16px; font-weight: 700; }
+    .workflow-list span { color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .workflow-list b { color: currentColor; font-size: 20px; font-weight: 400; text-align: right; }
+
+    .service-band { position: relative; overflow: hidden; padding: 132px 0; background: var(--night); color: var(--white); }
+    .service-band::before { content: ""; position: absolute; width: 58%; aspect-ratio: 1; right: -18%; top: -46%; border: 1px solid rgba(255,255,255,.1); border-radius: 50%; }
+    .service-inner { width: min(calc(100% - 40px), var(--container)); margin: 0 auto; position: relative; display: grid; grid-template-columns: minmax(260px, .8fr) minmax(390px, 1.2fr); gap: 78px; align-items: end; }
+    .service-inner h2 { max-width: 8ch; margin: 0; font-family: "Playfair Display", "Noto Serif SC", Georgia, serif; font-size: clamp(44px, 4.8vw, 64px); line-height: 1.05; }
+    .service-inner p { margin: 0 0 26px; color: rgba(255,255,255,.62); font-size: 15px; line-height: 1.7; }
+    .service-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    .module-hero { min-height: 430px; position: relative; overflow: hidden; padding: 174px 0 78px; background: #643019; color: var(--white); }
+    .module-hero::after { content: ""; position: absolute; left: 48%; bottom: -45%; width: 68vw; height: 60vw; background: #ded0d5; transform: rotate(-9deg); }
+    .module-hero .section-inner { position: relative; z-index: 2; }
+    .module-hero h1 { max-width: 8ch; margin: 0 0 13px; font-family: "Playfair Display", "Noto Serif SC", Georgia, serif; font-size: clamp(52px, 6vw, 76px); line-height: 1.02; }
+    .module-hero p { margin: 0; color: rgba(255,255,255,.72); font-size: 15px; }
+    .module-content { padding: 96px 0 112px; background: var(--paper); }
+    .module-layout { display: grid; grid-template-columns: 1.15fr .85fr; gap: 20px; }
+    .module-main { min-height: 355px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 42px; background: var(--stage-gray); }
+    .module-main h2 { max-width: 9ch; margin: 0; font-family: "Playfair Display", "Noto Serif SC", Georgia, serif; font-size: 40px; line-height: 1.1; }
+    .module-main p { max-width: 420px; margin: 19px 0 28px; color: var(--muted); line-height: 1.7; }
+    .module-list { background: var(--stone); }
+    .module-list button { width: 100%; min-height: 177px; border: 0; border-bottom: 1px solid var(--quiet); padding: 30px 34px; background: transparent; color: var(--ink); text-align: left; }
+    .module-list button:last-child { border-bottom: 0; }
+    .module-list button:hover { background: #f1ece7; }
+    .module-list strong { display: block; margin-bottom: 9px; font-size: 17px; }
+    .module-list span { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .resource-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+
+    .help-section { padding: 98px 0; background: var(--stage-gray); }
+    .help-layout { display: grid; grid-template-columns: .75fr 1.25fr; gap: 64px; }
+    .help-layout h2 { margin: 0; font-family: "Playfair Display", "Noto Serif SC", Georgia, serif; font-size: 42px; line-height: 1.1; }
+    .help-list { border-top: 1px solid var(--quiet); }
+    .help-list button { width: 100%; min-height: 70px; display: flex; align-items: center; justify-content: space-between; border: 0; border-bottom: 1px solid var(--quiet); padding: 0; background: transparent; color: var(--ink); font-size: 15px; text-align: left; }
+    .help-list button:hover { color: var(--accent); }
+    .help-list span { font-size: 21px; }
+
+    .modal-backdrop { position: fixed; inset: 0; z-index: 50; display: none; place-items: center; padding: 20px; background: rgba(20, 15, 12, .48); }
+    .modal-backdrop.show { display: grid; }
+    .modal { width: min(460px, 100%); padding: 30px; border-radius: var(--radius); background: var(--paper); box-shadow: 0 22px 60px rgba(0,0,0,.24); }
+    .modal h2 { margin: 0 0 9px; font-family: "Playfair Display", "Noto Serif SC", Georgia, serif; font-size: 30px; line-height: 1.15; }
+    .modal > p { margin: 0 0 24px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+    .field { display: grid; gap: 7px; margin-bottom: 15px; }
+    .field label { font-size: 13px; font-weight: 700; }
+    .field input { height: 44px; border: 1px solid rgba(26,24,21,.18); border-radius: var(--radius); padding: 0 12px; background: #fff; color: var(--ink); }
+    .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(206,100,61,.15); outline: 0; }
+    .form-error { min-height: 18px; color: #b33f25; font-size: 13px; }
+    .modal-list { display: grid; gap: 8px; margin-bottom: 21px; }
+    .modal-list div { padding: 12px 14px; background: var(--stone); font-size: 14px; line-height: 1.45; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 9px; }
+    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 70; max-width: min(360px, calc(100% - 44px)); padding: 13px 16px; background: var(--ink); color: var(--white); font-size: 14px; opacity: 0; pointer-events: none; transform: translateY(10px); transition: opacity .2s ease, transform .2s ease; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 980px) {
+      .auth-inner, .hero-inner { grid-template-columns: .9fr 1.1fr; }
+      .device-gallery, .module-layout, .workflow-layout, .help-layout, .service-inner { gap: 40px; }
+      .account-email { display: none; }
+      .epaper { width: min(35vw, 300px); }
+    }
+    @media (max-width: 760px) {
+      .site-head, .head-inner { height: 62px; }
+      .head-inner { width: min(calc(100% - 28px), var(--container)); }
+      .brand span, .account .head-button { display: none; }
+      .top-right { gap: 9px; }
+      .nav { max-width: 66vw; }
+      .nav button { min-height: 62px; padding: 0 9px; font-size: 12px; }
+      .auth-stage::after, .home-hero::after { bottom: -13vw; height: 68vw; transform: rotate(-8deg); }
+      .auth-inner, .hero-inner { width: min(calc(100% - 44px), var(--container)); min-height: 100dvh; grid-template-columns: 1fr; padding: 110px 0 52px; }
+      .auth-copy, .hero-copy { align-self: start; }
+      .auth-copy h1, .hero-copy h1 { max-width: 9ch; font-size: 48px; }
+      .auth-copy p, .hero-copy p { max-width: 270px; font-size: 14px; }
+      .device-scene { min-height: 355px; margin-top: -70px; }
+      .epaper { width: min(51vw, 220px); border-width: 8px; border-radius: 13px; padding: 10px; }
+      .epaper.back { left: 9%; bottom: 9%; width: min(42vw, 184px); }
+      .epaper.main { right: 4%; bottom: -1%; }
+      .hero-count { bottom: 14px; }
+      .section, .module-content { padding: 72px 0; }
+      .section-inner, .service-inner { width: min(calc(100% - 44px), var(--container)); }
+      .section-heading { margin-bottom: 36px; }
+      .section-heading h2, .workflow-layout h2, .help-layout h2 { font-size: 34px; }
+      .device-gallery, .workflow-layout, .service-inner, .module-layout, .help-layout { grid-template-columns: 1fr; gap: 28px; }
+      .device-card { min-height: 335px; padding: 28px; }
+      .device-card h3 { font-size: 34px; }
+      .workflow-list button { grid-template-columns: 1fr 22px; gap: 5px; min-height: 104px; }
+      .workflow-list span { grid-column: 1; }
+      .workflow-list b { grid-column: 2; grid-row: 1 / span 2; }
+      .service-band { padding: 90px 0; }
+      .service-inner h2 { font-size: 46px; }
+      .module-hero { min-height: 360px; padding: 138px 0 62px; }
+      .module-hero::after { left: 60%; bottom: -7%; width: 78vw; height: 45vw; }
+      .module-main { min-height: 310px; padding: 28px; }
+      .module-main h2 { font-size: 34px; }
+      .module-list button { min-height: 130px; padding: 25px 28px; }
+      .resource-grid { grid-template-columns: 1fr; }
+      .help-section { padding: 72px 0; }
+      .modal { padding: 25px; }
+    }
+    /* Minimal tool portal direction */
+    body { padding-top: 70px; background: #fcfcfb; }
+    .skip-link { position: fixed; left: 16px; top: -48px; z-index: 100; padding: 10px 14px; background: var(--ink); color: var(--white); font-size: 14px; transition: top .2s ease; }
+    .skip-link:focus { top: 12px; }
+    .site-head, .site-head:hover, .site-head.solid { color: var(--ink); background: rgba(252, 252, 251, .98); border-bottom: 1px solid var(--quiet); box-shadow: none; backdrop-filter: none; }
+    .head-inner { width: min(calc(100% - 48px), 1240px); }
+    .account-avatar { background: var(--stone); }
+    .auth-stage, .home-hero { min-height: calc(100dvh - 70px); background: #fcfcfb; color: var(--ink); }
+    .auth-stage::before, .auth-stage::after, .home-hero::before, .home-hero::after { display: none; }
+    .auth-inner, .hero-inner { width: min(calc(100% - 48px), 860px); min-height: calc(100dvh - 70px); display: block; padding: clamp(82px, 14vh, 150px) 0 90px; }
+    .home-hero { min-height: 392px; }
+    .home-hero .hero-inner { width: min(calc(100% - 48px), 1240px); min-height: 392px; display: grid; grid-template-columns: minmax(0, .9fr) minmax(260px, .54fr); gap: 56px; align-items: center; padding: 48px 0 34px; }
+    .home-hero .hero-copy { max-width: 650px; }
+    .hero-product { min-height: 310px; position: relative; overflow: hidden; background: #fcfcfb; cursor: grab; touch-action: none; }
+    .hero-product:active { cursor: grabbing; }
+    .hero-product canvas { width: 100%; height: 100%; display: block; outline: 0; }
+    .hero-actions .button { gap: 9px; }
+    .hero-actions .button svg { width: 17px; height: 17px; stroke-width: 1.8; }
+    .home-hero .hero-copy h1 { margin-bottom: 18px; }
+    .device-identity { display: flex; align-items: center; margin-top: 2px; }
+    .device-manage { display: inline-flex; align-items: center; gap: 5px; border: 0; padding: 0; background: transparent; color: var(--ink); font-size: 14px; font-weight: 600; }
+    .device-manage:hover { color: var(--accent); }
+    .device-manage svg { width: 15px; height: 15px; stroke-width: 1.7; }
+    .auth-copy, .hero-copy { max-width: 640px; }
+    .auth-copy h1, .hero-copy h1, .hero-copy #stageDeviceName { max-width: none; color: var(--ink); font-family: "MiSans", "Noto Sans SC", Arial, sans-serif; font-size: clamp(42px, 5.3vw, 66px); line-height: 1.14; font-weight: 700; }
+    .auth-copy p, .hero-copy p { max-width: 520px; color: var(--muted); font-size: 17px; line-height: 1.7; }
+    .overline { margin-bottom: 18px; padding: 0; background: transparent; color: var(--muted); font-size: 13px; }
+    .button.light { border-color: rgba(26, 24, 21, .25); color: var(--ink); }
+    .button.light:hover { border-color: var(--ink); background: transparent; }
+    .device-scene, .hero-count { display: none; }
+    .auth-links .text-action { color: var(--muted); }
+    .auth-links .text-action:hover { color: var(--accent); }
+    .section { padding: 80px 0; }
+    .section-inner, .service-inner { width: min(calc(100% - 48px), 1240px); }
+    .section-heading { margin-bottom: 32px; }
+    .section-heading h2, .workflow-layout h2, .help-layout h2 { font-family: "MiSans", "Noto Sans SC", Arial, sans-serif; font-size: 28px; line-height: 1.25; }
+    .section-heading p { max-width: 620px; }
+    .quick-import-section { border-top: 1px solid var(--quiet); background: #f8f8f7; }
+    .quick-import-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .quick-import-card { min-height: 226px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; border: 1px solid rgba(26, 24, 21, .1); border-radius: 8px; padding: 26px; background: #fff; color: var(--ink); text-align: left; transition: border-color .2s ease, background .2s ease, transform .2s ease, box-shadow .2s ease; }
+    .quick-import-card:hover { border-color: rgba(26, 24, 21, .32); background: #fcfcfb; box-shadow: 0 10px 26px rgba(26, 24, 21, .06); transform: translateY(-2px); }
+    .quick-import-card:active { transform: translateY(0); }
+    .quick-import-icon { width: 54px; height: 54px; display: grid; place-items: center; margin-bottom: auto; border: 1px solid rgba(26, 24, 21, .1); border-radius: 50%; background: #fafafa; color: #515b67; }
+    .quick-import-icon svg { width: 25px; height: 25px; stroke-width: 1.65; }
+    .quick-import-card strong { margin-top: 32px; font-size: 18px; font-weight: 650; }
+    .quick-import-card small { display: block; margin-top: 9px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .creation-section { border-top: 1px solid var(--quiet); background: #fcfcfb; }
+    .creation-grid { display: grid; grid-template-columns: 1.16fr repeat(3, minmax(0, .92fr)); gap: 12px; }
+    .creation-card { min-height: 180px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; border: 1px solid rgba(26, 24, 21, .1); border-radius: 8px; padding: 25px; background: #fff; color: var(--ink); text-align: left; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+    .creation-card.primary { background: #ecebe7; }
+    .creation-card:hover { border-color: rgba(26, 24, 21, .32); transform: translateY(-2px); }
+    .creation-card:active { transform: translateY(0); }
+    .creation-card .creation-icon { width: 34px; height: 34px; display: grid; place-items: center; color: #515b67; }
+    .creation-card .creation-icon svg { width: 25px; height: 25px; stroke-width: 1.6; }
+    .creation-card strong { display: block; font-size: 18px; font-weight: 650; }
+    .creation-card small { display: block; margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .help-center { border-top: 1px solid var(--quiet); background: #f4f4f2; }
+    .help-center-layout { display: block; }
+    .help-center-layout h2 { margin: 0 0 26px; font-size: 28px; line-height: 1.25; }
+    .help-actions { width: min(100%, 560px); border-top: 1px solid rgba(26, 24, 21, .12); }
+    .help-actions button { width: 100%; min-height: 76px; display: grid; grid-template-columns: 26px 1fr 18px; gap: 13px; align-items: center; border: 0; border-bottom: 1px solid rgba(26, 24, 21, .12); padding: 0; background: transparent; color: var(--ink); text-align: left; }
+    .help-actions button:hover { color: var(--accent); }
+    .help-actions button > svg { width: 19px; height: 19px; stroke-width: 1.65; }
+    .help-actions strong { font-size: 16px; font-weight: 650; }
+    .help-actions .action-arrow { justify-self: end; }
+    .devices-section { border-top: 1px solid var(--quiet); background: #fcfcfb; }
+    .device-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .device-card, .device-card.main, .device-card.desk { min-height: 0; padding: 26px 28px; border: 1px solid var(--quiet); background: #fff; }
+    .device-card::before, .device-card::after { display: none; }
+    .device-card:hover { border-color: rgba(26, 24, 21, .28); background: var(--stone); }
+    .device-card.active-device { border-color: var(--ink); box-shadow: inset 3px 0 0 var(--accent); }
+    .device-card .device-label { margin-bottom: 10px; font-size: 12px; }
+    .device-card h3 { max-width: none; margin-bottom: 7px; font-family: "MiSans", "Noto Sans SC", Arial, sans-serif; font-size: 20px; line-height: 1.35; }
+    .device-card p { margin-bottom: 20px; }
+    .device-card .button { min-width: auto; min-height: 38px; padding: 8px 14px; font-size: 13px; }
+    .workflow-section { border-top: 1px solid var(--quiet); background: var(--stone); }
+    .workflow-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .workflow-list { border-top: 0; }
+    .workflow-list button { min-height: 78px; grid-template-columns: 154px 1fr 24px; }
+    .workflow-list button:first-child { border-top: 1px solid var(--quiet); }
+    .workflow-list i { width: 18px; height: 18px; justify-self: end; stroke-width: 1.6; }
+    .service-band { display: none; }
+    .module-hero { min-height: 0; padding: 94px 0 36px; background: #fcfcfb; color: var(--ink); border-bottom: 1px solid var(--quiet); }
+    .module-hero::after { display: none; }
+    .module-hero h1 { max-width: none; margin-bottom: 8px; color: var(--ink); font-family: "MiSans", "Noto Sans SC", Arial, sans-serif; font-size: 38px; line-height: 1.2; }
+    .module-hero p { color: var(--muted); }
+    .module-content { padding: 48px 0 80px; background: var(--stone); }
+    .module-layout { grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr); gap: 12px; }
+    .module-main { min-height: 300px; padding: 32px; border: 1px solid var(--quiet); background: #fff; }
+    .module-main h2 { max-width: none; font-family: "MiSans", "Noto Sans SC", Arial, sans-serif; font-size: 27px; line-height: 1.3; }
+    .module-list { border: 1px solid var(--quiet); background: #fff; }
+    .module-list button { min-height: 149px; padding: 26px 28px; }
+    .module-list button:hover { background: var(--stone); }
+    .help-section { padding: 64px 0 80px; background: var(--stone); }
+    .help-layout { grid-template-columns: 220px minmax(0, 1fr); gap: 64px; }
+    .modal h2 { font-family: "MiSans", "Noto Sans SC", Arial, sans-serif; }
+
+    @media (max-width: 760px) {
+      body { padding-top: 62px; }
+      .skip-link:focus { top: 8px; }
+      .auth-stage, .home-hero, .auth-inner, .hero-inner { min-height: calc(100dvh - 62px); }
+      .auth-inner, .hero-inner, .section-inner, .service-inner { width: min(calc(100% - 36px), 1240px); }
+      .auth-inner, .hero-inner { padding: 76px 0 56px; }
+      .home-hero, .home-hero .hero-inner { min-height: 408px; }
+      .home-hero .hero-inner { width: min(calc(100% - 36px), 1240px); min-height: 0; grid-template-columns: 1fr; gap: 8px; padding: 42px 0 24px; }
+      .hero-product { min-height: 220px; }
+      .hero-product img { max-height: 300px; }
+      .auth-copy h1, .hero-copy h1, .hero-copy #stageDeviceName { font-size: 42px; }
+      .auth-copy p, .hero-copy p { font-size: 16px; }
+      .section { padding: 56px 0; }
+      .quick-import-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .quick-import-card { min-height: 188px; padding: 20px; }
+      .quick-import-icon { width: 48px; height: 48px; }
+      .quick-import-icon svg { width: 22px; height: 22px; }
+      .quick-import-card strong { margin-top: 22px; font-size: 16px; }
+      .quick-import-card small { margin-top: 6px; font-size: 12px; }
+      .creation-grid { grid-template-columns: 1fr; gap: 12px; }
+      .creation-card { min-height: 142px; padding: 20px; }
+      .creation-card strong { font-size: 16px; }
+      .device-gallery, .workflow-layout, .help-layout, .module-layout { grid-template-columns: 1fr; gap: 16px; }
+      .device-card { padding: 23px; }
+      .workflow-layout, .help-layout { gap: 26px; }
+      .workflow-list button { min-height: 96px; grid-template-columns: 1fr 22px; }
+      .workflow-list span { grid-column: 1; }
+      .workflow-list b { grid-column: 2; grid-row: 1 / span 2; }
+      .module-hero { padding: 82px 0 28px; }
+      .module-hero h1 { font-size: 33px; }
+      .module-content { padding: 32px 0 56px; }
+      .module-main { min-height: 260px; padding: 25px; }
+      .module-list button { min-height: 122px; padding: 23px 25px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">跳到主要内容</a>
+  <header class="site-head" id="siteHead">
+    <div class="head-inner">
+      <div class="brand"><strong>卡片墨水屏</strong></div>
+      <div class="top-right">
+        <nav class="nav logged-in" aria-label="功能导航">
+          <button class="active" data-view="home">首页</button>
+          <button data-view="resources">资源广场</button>
+          <button data-view="upgrade">一键刷机</button>
+          <button data-view="cloud">云空间</button>
+          <button data-view="downloads">下载 App</button>
+        </nav>
+        <div class="logged-out"><button class="head-button" id="headerLogin">登录</button></div>
+        <div class="account logged-in"><span class="account-avatar">D</span><span class="account-email">darwin@example.com</span><button class="head-button" id="logoutButton">退出</button></div>
+      </div>
+    </div>
+  </header>
+
+  <main id="mainContent">
+    <section class="auth-stage logged-out">
+      <div class="auth-inner">
+        <div class="auth-copy">
+          <span class="overline">卡片墨水屏</span>
+          <h1>你的卡片<br>墨水屏</h1>
+          <p>登录后查看设备，发送内容，管理云端文件和系统工具。</p>
+          <button class="button primary" id="loginButton">登录账号</button>
+          <div class="auth-links"><button class="text-action" data-action="download">下载 App</button><button class="text-action" data-action="support">联系支持</button></div>
+        </div>
+        <div class="device-scene" aria-hidden="true"><div class="scene-shadow"></div><div class="epaper back"><div class="screen"></div></div><div class="epaper main"><div class="screen"></div></div></div>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <section class="view-panel active" data-panel="home">
+        <section class="home-hero">
+          <div class="hero-inner">
+            <div class="hero-copy">
+              <h1 id="stageDeviceName">Darwin's 4-inch E-paper</h1>
+              <div class="device-identity"><button class="device-manage" data-action="bind">切换设备<i data-lucide="chevrons-up-down" aria-hidden="true"></i></button></div>
+            </div>
+            <div class="hero-product" id="productViewer" role="img" aria-label="可旋转查看的 Palma 2 墨水屏设备"></div>
+          </div>
+        </section>
+
+        <section class="section quick-import-section">
+          <div class="section-inner">
+            <div class="section-heading"><h2>快速导入</h2></div>
+            <div class="quick-import-grid">
+              <button class="quick-import-card" data-action="import-book"><span class="quick-import-icon"><i data-lucide="book-open" aria-hidden="true"></i></span><strong>导入图书</strong><small>选择 EPUB、PDF 或 TXT 文件</small></button>
+              <button class="quick-import-card" data-action="import-wallpaper"><span class="quick-import-icon"><i data-lucide="image" aria-hidden="true"></i></span><strong>导入壁纸</strong><small>预览并适配 4 寸显示效果</small></button>
+              <button class="quick-import-card" data-action="web-link"><span class="quick-import-icon"><i data-lucide="link" aria-hidden="true"></i></span><strong>网页链接</strong><small>保存网页并发送到设备</small></button>
+              <button class="quick-import-card" data-action="import-font"><span class="quick-import-icon"><i data-lucide="type" aria-hidden="true"></i></span><strong>导入字体</strong><small>上传字体并同步到设备</small></button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section creation-section">
+          <div class="section-inner">
+            <div class="section-heading"><h2>内容创作</h2></div>
+            <div class="creation-grid">
+              <button class="creation-card primary" data-action="book-convert"><span class="creation-icon"><i data-lucide="book-text" aria-hidden="true"></i></span><span><strong>图书转换</strong><small>将常用文档整理为适合阅读的电子书</small></span></button>
+              <button class="creation-card" data-action="wallpaper-template"><span class="creation-icon"><i data-lucide="panels-top-left" aria-hidden="true"></i></span><span><strong>壁纸模板</strong><small>使用模板制作日历、待办和信息卡片</small></span></button>
+              <button class="creation-card" data-action="cover-creator"><span class="creation-icon"><i data-lucide="square-pen" aria-hidden="true"></i></span><span><strong>书封创作</strong><small>为图书生成适合墨水屏显示的封面</small></span></button>
+              <button class="creation-card" data-action="font-maker"><span class="creation-icon"><i data-lucide="text-cursor-input" aria-hidden="true"></i></span><span><strong>字体制作</strong><small>制作并导出适合墨水屏阅读的字体文件</small></span></button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section help-center">
+          <div class="section-inner help-center-layout">
+            <h2>帮助中心</h2>
+            <div class="help-actions">
+              <button data-action="manual"><i data-lucide="book-open-check" aria-hidden="true"></i><strong>使用文档</strong><i class="action-arrow" data-lucide="arrow-up-right" aria-hidden="true"></i></button>
+              <button data-action="feedback"><i data-lucide="message-square-plus" aria-hidden="true"></i><strong>意见反馈</strong><i class="action-arrow" data-lucide="arrow-up-right" aria-hidden="true"></i></button>
+            </div>
+          </div>
+        </section>
+
+      </section>
+
+      <section class="view-panel" data-panel="transfer">
+        <section class="module-hero"><div class="section-inner"><h1>文件传输</h1><p>发送内容到 <span id="transferDeviceName">Darwin's 4-inch E-paper</span></p></div></section>
+        <section class="module-content"><div class="section-inner module-layout"><div class="module-main"><div><h2>选择要发送的内容</h2><p>支持图书、壁纸、网页链接、字体和配置文件。发送前可预览 4 寸屏显示效果。</p></div><button class="button primary" data-action="transfer">选择文件</button></div><div class="module-list"><button data-action="import-book"><strong>导入图书</strong><span>EPUB、PDF 或 TXT 文件</span></button><button data-action="import-wallpaper"><strong>导入壁纸</strong><span>适配屏幕比例后发送</span></button><button data-action="import-font"><strong>导入字体</strong><span>上传后同步到设备</span></button></div></div></section>
+      </section>
+
+      <section class="view-panel" data-panel="upgrade">
+        <section class="module-hero"><div class="section-inner"><h1>一键刷机</h1><p>选择固件版本，按步骤完成设备刷机或恢复。</p></div></section>
+        <section class="module-content"><div class="section-inner module-layout"><div class="module-main"><div><h2>开始刷机</h2><p>连接设备后检查可用固件，并按提示完成刷机。</p></div><button class="button primary" data-action="upgrade">开始刷机</button></div><div class="module-list"><button data-action="firmware"><strong>固件下载</strong><span>获取最新版本和历史版本</span></button><button data-action="issue-upgrade"><strong>恢复设备</strong><span>刷机失败时使用</span></button></div></div></section>
+      </section>
+
+      <section class="view-panel" data-panel="cloud">
+        <section class="module-hero"><div class="section-inner"><h1>云空间</h1><p>保存图书、壁纸、字体和设备配置。</p></div></section>
+        <section class="module-content"><div class="section-inner module-layout"><div class="module-main"><div><h2>管理云端内容</h2><p>浏览云端文件，并将内容同步到当前选择的设备。</p></div><button class="button primary" data-action="cloud">进入云空间</button></div><div class="module-list"><button data-action="cloud"><strong>同步到设备</strong><span>选择云端内容后发送</span></button><button data-action="cloud"><strong>设备备份</strong><span>保存当前设备配置</span></button></div></div></section>
+      </section>
+
+      <section class="view-panel" data-panel="resources">
+        <section class="module-hero"><div class="section-inner"><h1>资源广场</h1><p>下载适配 4 寸卡片墨水屏的内容。</p></div></section>
+        <section class="section devices-section"><div class="section-inner"><div class="section-heading"><h2>为设备挑选内容</h2><p>选择壁纸、字体、卡片模板和使用教程。</p></div><div class="resource-grid"><button class="device-card main" data-action="resources"><span class="device-label">资源广场</span><h3>壁纸与卡片模板</h3><p>日历、天气与书摘样式。</p><span class="button">浏览资源</span></button><button class="device-card desk" data-action="resources"><span class="device-label">资源广场</span><h3>字体与使用教程</h3><p>为阅读和操作准备内容。</p><span class="button">查看内容</span></button></div></div></section>
+      </section>
+
+      <section class="view-panel" data-panel="downloads">
+        <section class="module-hero"><div class="section-inner"><h1>下载 App</h1><p>获取用于配网和快速发送内容的手机 App。</p></div></section>
+        <section class="help-section"><div class="section-inner help-layout"><h2>选择系统</h2><div class="help-list"><button data-action="download">iOS App<span>›</span></button><button data-action="download">Android App<span>›</span></button><button data-action="manual">使用文档<span>›</span></button></div></div></section>
+      </section>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal"><h2 id="modalTitle">登录账号</h2><p id="modalText">登录后查看账号下已绑定的设备。</p><form id="loginForm"><div class="field"><label for="email">邮箱</label><input id="email" type="email" autocomplete="email" placeholder="name@example.com"></div><div class="field"><label for="password">密码</label><input id="password" type="password" autocomplete="current-password" placeholder="输入密码"></div><div class="form-error" id="formError" role="alert"></div><div class="modal-actions"><button class="button" type="button" id="closeModal">取消</button><button class="button primary" type="submit">登录</button></div></form><div class="modal-list" id="modalList" hidden></div><div class="modal-actions" id="flowActions" hidden><button class="button primary" type="button" id="closeFlow">完成</button></div></div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="assets/three.min.js"></script>
+  <script src="assets/lucide.min.js"></script>
+  <script>
+    function createRoundedShape(width, height, radius) {
+      const shape = new THREE.Shape();
+      const x = -width / 2;
+      const y = -height / 2;
+      shape.moveTo(x + radius, y);
+      shape.lineTo(x + width - radius, y);
+      shape.quadraticCurveTo(x + width, y, x + width, y + radius);
+      shape.lineTo(x + width, y + height - radius);
+      shape.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      shape.lineTo(x + radius, y + height);
+      shape.quadraticCurveTo(x, y + height, x, y + height - radius);
+      shape.lineTo(x, y + radius);
+      shape.quadraticCurveTo(x, y, x + radius, y);
+      return shape;
+    }
+
+    function createCanvasTexture(width, height, draw) {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      draw(context, width, height);
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      return texture;
+    }
+
+    function createScreenTexture() {
+      return createCanvasTexture(300, 660, (context, width, height) => {
+        context.fillStyle = '#d9dddd';
+        context.fillRect(0, 0, width, height);
+        context.strokeStyle = 'rgba(35, 35, 33, .55)';
+        context.lineWidth = 2;
+        context.font = '500 23px Arial';
+        context.fillStyle = '#20201e';
+        context.textAlign = 'center';
+        context.fillText('Palma 2', width / 2, 64);
+        context.beginPath();
+        context.arc(width / 2, 318, 82, 0, Math.PI * 2);
+        context.moveTo(width / 2, 236);
+        context.lineTo(width / 2, 428);
+        context.moveTo(width / 2 - 108, 318);
+        context.lineTo(width / 2 + 108, 318);
+        context.moveTo(width / 2 - 70, 387);
+        context.lineTo(width / 2 + 70, 387);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(width / 2 - 34, 387);
+        context.lineTo(width / 2 - 22, 462);
+        context.lineTo(width / 2 + 22, 462);
+        context.lineTo(width / 2 + 34, 387);
+        context.stroke();
+        context.font = 'italic 16px Georgia';
+        context.fillStyle = '#2a2a28';
+        context.fillText('Make a difference', width / 2, 580);
+      });
+    }
+
+    function createBackTexture() {
+      return createCanvasTexture(300, 660, (context, width, height) => {
+        context.fillStyle = '#e9e8e2';
+        context.fillRect(0, 0, width, height);
+        for (let y = 0; y < height; y += 4) {
+          context.strokeStyle = `rgba(105, 104, 98, ${.025 + (y % 12) * .003})`;
+          context.beginPath();
+          context.moveTo(0, y);
+          context.lineTo(width, y);
+          context.stroke();
+        }
+        context.fillStyle = '#d9d8d1';
+        context.fillRect(28, 56, 48, 165);
+        context.fillStyle = '#242422';
+        context.beginPath();
+        context.arc(52, 83, 15, 0, Math.PI * 2);
+        context.fill();
+        context.fillStyle = '#72716c';
+        context.beginPath();
+        context.arc(52, 128, 8, 0, Math.PI * 2);
+        context.fill();
+        context.save();
+        context.translate(62, 185);
+        context.rotate(Math.PI / 2);
+        context.font = '500 19px Arial';
+        context.fillStyle = 'rgba(60, 60, 56, .34)';
+        context.fillText('BOOX', 0, 0);
+        context.restore();
+      });
+    }
+
+    async function initProductViewer() {
+      const mount = document.getElementById('productViewer');
+      if (!mount || !window.THREE) return;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+      camera.position.set(0, .15, 8.1);
+
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      mount.appendChild(renderer.domElement);
+
+      const keyLight = new THREE.DirectionalLight(0xffffff, 3.2);
+      keyLight.position.set(4, 6, 7);
+      keyLight.castShadow = true;
+      keyLight.shadow.mapSize.set(1024, 1024);
+      scene.add(keyLight);
+      const fillLight = new THREE.DirectionalLight(0xdfe5e6, 1.7);
+      fillLight.position.set(-5, 2, 4);
+      scene.add(fillLight);
+      const rimLight = new THREE.DirectionalLight(0xf0ddd1, 2.1);
+      rimLight.position.set(-3, 3, -5);
+      scene.add(rimLight);
+      scene.add(new THREE.HemisphereLight(0xffffff, 0xcac4bd, 1.5));
+
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ color: 0x4a4039, opacity: .1 }));
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -2.86;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      const device = new THREE.Group();
+      device.rotation.set(-.08, -.34, .02);
+      scene.add(device);
+
+      const bodyShape = createRoundedShape(2.28, 4.62, .24);
+      const bodyGeometry = new THREE.ExtrudeGeometry(bodyShape, { depth: .32, bevelEnabled: true, bevelSegments: 5, bevelSize: .04, bevelThickness: .04, curveSegments: 24 });
+      bodyGeometry.translate(0, 0, -.16);
+      const body = new THREE.Mesh(bodyGeometry, new THREE.MeshPhysicalMaterial({ color: 0xd8d7d1, roughness: .34, metalness: .16, clearcoat: .2, clearcoatRoughness: .36, side: THREE.DoubleSide }));
+      body.castShadow = true;
+      body.receiveShadow = true;
+      device.add(body);
+
+      const frontFaceGeometry = new THREE.ShapeGeometry(createRoundedShape(2.15, 4.49, .22));
+      const frontFace = new THREE.Mesh(frontFaceGeometry, new THREE.MeshStandardMaterial({ color: 0xe4e4df, roughness: .3, metalness: .12, side: THREE.DoubleSide }));
+      frontFace.position.z = .19;
+      device.add(frontFace);
+
+      const bezelGeometry = new THREE.ShapeGeometry(createRoundedShape(2.00, 4.30, .17));
+      const bezel = new THREE.Mesh(bezelGeometry, new THREE.MeshStandardMaterial({ color: 0x939896, roughness: .42, metalness: .1, side: THREE.DoubleSide }));
+      bezel.position.z = .202;
+      device.add(bezel);
+
+      const screenGeometry = new THREE.ShapeGeometry(createRoundedShape(1.76, 3.96, .14));
+      const backGeometry = new THREE.ShapeGeometry(createRoundedShape(2.00, 4.34, .18));
+      const frontTexture = createScreenTexture();
+      const backTexture = createBackTexture();
+
+      const screen = new THREE.Mesh(screenGeometry, new THREE.MeshBasicMaterial({ map: frontTexture, side: THREE.DoubleSide }));
+      screen.position.z = .214;
+      device.add(screen);
+      const back = new THREE.Mesh(backGeometry, new THREE.MeshBasicMaterial({ map: backTexture, side: THREE.DoubleSide }));
+      back.position.z = -.172;
+      back.rotation.y = Math.PI;
+      device.add(back);
+
+      const buttonMaterial = new THREE.MeshStandardMaterial({ color: 0xc8c6c0, roughness: .32, metalness: .22 });
+      const sideButton = new THREE.BoxGeometry(.08, .48, .12);
+      const lowerButton = new THREE.BoxGeometry(.08, .3, .12);
+      const rightButton = new THREE.Mesh(sideButton, buttonMaterial);
+      rightButton.position.set(1.19, .53, 0);
+      rightButton.castShadow = true;
+      device.add(rightButton);
+      const rightButtonLower = new THREE.Mesh(lowerButton, buttonMaterial);
+      rightButtonLower.position.set(1.19, -.38, 0);
+      rightButtonLower.castShadow = true;
+      device.add(rightButtonLower);
+
+      const frontDetailMaterial = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: .5, metalness: .1 });
+      const speaker = new THREE.Mesh(new THREE.BoxGeometry(.34, .04, .025), frontDetailMaterial);
+      speaker.position.set(.25, 2.08, .23);
+      device.add(speaker);
+      const sensor = new THREE.Mesh(new THREE.CircleGeometry(.065, 20), frontDetailMaterial);
+      sensor.position.set(-.42, 2.08, .23);
+      device.add(sensor);
+
+      let targetRotationY = device.rotation.y;
+      let targetRotationX = device.rotation.x;
+      let dragging = false;
+      let lastX = 0;
+      let lastY = 0;
+      let hasInteracted = false;
+
+      mount.addEventListener('pointerdown', event => {
+        dragging = true;
+        hasInteracted = true;
+        lastX = event.clientX;
+        lastY = event.clientY;
+        mount.setPointerCapture(event.pointerId);
+      });
+      mount.addEventListener('pointermove', event => {
+        if (!dragging) return;
+        targetRotationY += (event.clientX - lastX) * .012;
+        targetRotationX = Math.max(-.42, Math.min(.3, targetRotationX + (event.clientY - lastY) * .006));
+        lastX = event.clientX;
+        lastY = event.clientY;
+      });
+      const finishDrag = event => {
+        dragging = false;
+        if (mount.hasPointerCapture(event.pointerId)) mount.releasePointerCapture(event.pointerId);
+      };
+      mount.addEventListener('pointerup', finishDrag);
+      mount.addEventListener('pointercancel', finishDrag);
+      mount.addEventListener('keydown', event => {
+        if (event.key === 'ArrowLeft') targetRotationY -= .18;
+        if (event.key === 'ArrowRight') targetRotationY += .18;
+      });
+      mount.tabIndex = 0;
+
+      const resize = () => {
+        const { width, height } = mount.getBoundingClientRect();
+        if (!width || !height) return;
+        camera.position.z = width < 480 ? 10 : 8.1;
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height, false);
+      };
+      const resizeObserver = new ResizeObserver(resize);
+      resizeObserver.observe(mount);
+      resize();
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const render = () => {
+        if (!hasInteracted && !reducedMotion) targetRotationY += .0026;
+        device.rotation.y += (targetRotationY - device.rotation.y) * .11;
+        device.rotation.x += (targetRotationX - device.rotation.x) * .11;
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+      };
+      render();
+    }
+
+    initProductViewer();
+  </script>
+  <script>
+    const flows = {
+      support: { title: '联系支持', text: '提交问题时，请附上设备型号、遇到的情况和已尝试的操作。', items: ['选择问题类型', '填写设备现象', '提交支持请求'], toast: '已打开支持入口' },
+      feedback: { title: '意见反馈', text: '告诉我们你遇到的问题或希望改进的体验。', items: ['选择反馈类型', '描述使用场景', '提交反馈'], toast: '已打开意见反馈' },
+      download: { title: '下载 App', text: '选择手机系统，获取用于配网和快速推送的 App。', items: ['选择 iOS 或 Android', '下载 App', '完成登录并绑定设备'], toast: '已打开 App 下载' },
+      bind: { title: '绑定新设备', text: '让设备进入绑定模式后，使用绑定码完成关联。', items: ['打开设备绑定模式', '输入或扫描绑定码', '为设备设置名称'], toast: '已打开绑定设备' },
+      transfer: { title: '文件传输', text: '选择要传输的文件，并确认发送到当前选中的设备。', items: ['选择图书、壁纸、字体或配置文件', '查看 4 寸屏效果', '发送到设备'], toast: '已打开文件传输' },
+      'import-book': { title: '导入图书', text: '选择本地电子书，确认阅读格式后发送到设备。', items: ['选择 EPUB、PDF 或 TXT 文件', '预览阅读版式', '发送到设备'], toast: '已打开图书导入' },
+      'import-wallpaper': { title: '导入壁纸', text: '选择图片，网页会按 4 寸墨水屏比例进行预览。', items: ['选择图片文件', '确认裁切和显示效果', '设为设备壁纸'], toast: '已打开壁纸导入' },
+      'web-link': { title: '网页链接', text: '保存网页链接，将适合阅读的内容发送到设备。', items: ['粘贴网页链接', '确认内容预览', '发送到设备'], toast: '已打开网页链接导入' },
+      'import-font': { title: '导入字体', text: '上传字体文件，并同步到当前选择的设备。', items: ['选择字体文件', '确认字体名称', '同步到设备'], toast: '已打开字体导入' },
+      'book-convert': { title: '图书转换', text: '将本地文档转换为适合墨水屏阅读的电子书格式。', items: ['选择文档', '确认阅读版式', '保存到云空间或发送到设备'], toast: '已打开图书转换' },
+      'wallpaper-template': { title: '壁纸模板', text: '选择模板，填写内容后生成适合设备显示的壁纸。', items: ['选择壁纸模板', '编辑文字和布局', '保存或发送到设备'], toast: '已打开壁纸模板' },
+      'cover-creator': { title: '书封创作', text: '制作适合墨水屏显示的图书封面。', items: ['选择图书或上传图片', '调整标题和构图', '保存封面'], toast: '已打开书封创作' },
+      'font-maker': { title: '字体制作', text: '选择字形风格并导出适合墨水屏阅读的字体文件。', items: ['选择字体基础样式', '调整字形参数', '导出或发送到设备'], toast: '已打开字体制作' },
+      cloud: { title: '云空间', text: '管理图书、壁纸、字体和设备配置。', items: ['浏览云端文件', '选择同步内容', '发送到当前设备'], toast: '已打开云空间' },
+      upgrade: { title: '一键刷机', text: '选择固件版本，按提示完成设备刷机或恢复。', items: ['检查固件说明', '确认刷机前事项', '开始刷机'], toast: '已打开一键刷机' },
+      resources: { title: '资源广场', text: '下载适配 4 寸墨水屏的壁纸、字体、模板和教程。', items: ['浏览资源', '查看预览', '保存到云空间'], toast: '已打开资源广场' },
+      connect: { title: '连接设备', text: '按设备说明通过 Wi-Fi 或 USB 建立连接。', items: ['选择连接方式', '按提示完成连接', '返回文件传输'], toast: '已打开连接教程' },
+      'issue-transfer': { title: '文件传输失败', text: '检查文件格式、大小限制、设备空间和当前连接。', items: ['检查文件格式', '确认剩余空间', '重新连接后重试'], toast: '已打开传输问题排查' },
+      'issue-upgrade': { title: '升级或刷机失败', text: '确认固件文件、连接线和设备模式后进入恢复流程。', items: ['重新下载固件', '进入恢复模式', '重新安装'], toast: '已打开恢复教程' },
+      firmware: { title: '固件', text: '下载最新固件、历史版本和恢复工具。', items: ['查看版本说明', '下载固件', '查看恢复工具'], toast: '已打开固件下载' },
+      manual: { title: '说明书', text: '查看开机、配网、文件传输和刷机说明。', items: ['快速开始', '日常使用', '故障排查'], toast: '已打开说明书' }
+    };
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalText = document.getElementById('modalText');
+    const loginForm = document.getElementById('loginForm');
+    const modalList = document.getElementById('modalList');
+    const flowActions = document.getElementById('flowActions');
+    const formError = document.getElementById('formError');
+    const toast = document.getElementById('toast');
+    let activeToast = '';
+    function showToast(text) { toast.textContent = text; toast.classList.add('show'); window.clearTimeout(showToast.timer); showToast.timer = window.setTimeout(() => toast.classList.remove('show'), 2400); }
+    function closeModal() { modalBackdrop.classList.remove('show'); activeToast = ''; }
+    function openLogin() { modalTitle.textContent = '登录账号'; modalText.textContent = '登录后查看账号下已绑定的设备。'; loginForm.hidden = false; modalList.hidden = true; flowActions.hidden = true; formError.textContent = ''; modalBackdrop.classList.add('show'); window.setTimeout(() => document.getElementById('email').focus(), 0); }
+    function openFlow(name) { const flow = flows[name]; if (!flow) return; modalTitle.textContent = flow.title; modalText.textContent = flow.text; loginForm.hidden = true; modalList.hidden = false; flowActions.hidden = false; modalList.innerHTML = flow.items.map(item => `<div>${item}</div>`).join(''); activeToast = flow.toast; modalBackdrop.classList.add('show'); }
+    function setView(name) { document.querySelectorAll('[data-panel]').forEach(panel => panel.classList.toggle('active', panel.dataset.panel === name)); document.querySelectorAll('.nav [data-view]').forEach(tab => tab.classList.toggle('active', tab.dataset.view === name)); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function login() { document.body.classList.add('is-logged-in'); setView('home'); closeModal(); showToast('已登录，已显示绑定设备'); }
+    document.getElementById('headerLogin').addEventListener('click', openLogin);
+    document.getElementById('loginButton').addEventListener('click', openLogin);
+    document.getElementById('logoutButton').addEventListener('click', () => { document.body.classList.remove('is-logged-in'); showToast('已退出登录'); });
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('closeFlow').addEventListener('click', () => { const message = activeToast; closeModal(); if (message) showToast(message); });
+    modalBackdrop.addEventListener('click', event => { if (event.target === modalBackdrop) closeModal(); });
+    loginForm.addEventListener('submit', event => { event.preventDefault(); const email = document.getElementById('email').value.trim(); const password = document.getElementById('password').value; if (!email || !password) { formError.textContent = '请输入邮箱和密码。'; return; } login(); });
+    document.querySelectorAll('[data-action]').forEach(button => button.addEventListener('click', () => openFlow(button.dataset.action)));
+    document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
+    document.querySelectorAll('[data-device]').forEach(button => button.addEventListener('click', () => { const name = button.dataset.name; document.querySelectorAll('[data-device]').forEach(item => { item.classList.toggle('active-device', item === button); item.setAttribute('aria-pressed', String(item === button)); }); document.getElementById('stageDeviceName').textContent = name; document.getElementById('transferDeviceName').textContent = name; showToast(`已选择 ${name}`); }));
+    if (window.lucide) window.lucide.createIcons({ attrs: { 'aria-hidden': 'true' } });
+  </script>
+</body>
+</html>

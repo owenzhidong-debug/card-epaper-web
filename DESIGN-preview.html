@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOOX Chinese Homepage Preview</title>
+    <meta name="color-scheme" content="light" />
+    <style>
+      :root {
+        --page-bg: #FEFDF8;
+        --page-bg-muted: rgb(254, 253, 248);
+        --surface-bg: #FEFDF8;
+        --surface-bg-muted: rgb(254, 253, 248);
+        --surface-border: #CE643D;
+        --surface-border-strong: rgb(222, 221, 216);
+        --surface-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 2px rgba(0, 0, 0, 0.04), 0 8px 8px -8px rgba(0, 0, 0, 0.04);
+        --surface-shadow-soft: 0 0 0 1px #CE643D;
+        --ink: #1A1815;
+        --muted: rgba(67,61,55,0.70);
+        --subtle: rgb(149, 148, 144);
+        --accent: #CE643D;
+        --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        --font-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, monospace;
+        --body-size: 14px;
+        --body-line: 20px;
+        --body-weight: 400;
+        --label-size: 13px;
+        --label-line: 16px;
+        --label-track: 0.03em;
+        --title-size: 32px;
+        --title-line: 32px;
+        --title-track: -0.03em;
+        --section-size: 32px;
+        --section-line: 32px;
+        --section-track: -0.02em;
+        --source-size: 13px;
+        --source-line: 20px;
+        --space-1: 4px;
+        --space-2: 6px;
+        --space-3: 8px;
+        --space-4: 12px;
+        --space-5: 16px;
+        --space-6: 20px;
+        --radius-panel: 4px;
+        --radius-card: 4px;
+        --radius-micro: 2px;
+        --radius-pill: 50%;
+        --button-height: 40px;
+        --button-font-size: 13px;
+        --button-weight: 500;
+        --button-radius: 50%;
+        --secondary-button-radius: 50%;
+        --layout-gap: 12px;
+        --page-padding: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: var(--body-size);
+        font-weight: var(--body-weight);
+        line-height: var(--body-line);
+        background:
+          radial-gradient(circle at top, color-mix(in srgb, var(--accent) 8%, transparent), transparent 30%),
+          linear-gradient(180deg, var(--page-bg) 0%, var(--page-bg-muted) 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background-image:
+          linear-gradient(color-mix(in srgb, var(--surface-border) 56%, transparent) 1px, transparent 1px),
+          linear-gradient(90deg, color-mix(in srgb, var(--surface-border) 56%, transparent) 1px, transparent 1px);
+        background-size: 100% calc(24px), calc(24px) 100%;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.3), transparent 88%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .shell {
+        width: min(1440px, calc(100vw - (var(--page-padding) * 2)));
+        margin: 0 auto;
+        padding: var(--page-padding) 0 calc(var(--page-padding) * 1.2);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(340px, 0.92fr) minmax(420px, 1fr);
+        gap: var(--layout-gap);
+        align-items: start;
+      }
+
+      .stack {
+        display: grid;
+        gap: var(--space-4);
+      }
+
+      .panel {
+        overflow: hidden;
+        border: 1px solid var(--surface-border);
+        border-radius: var(--radius-panel);
+        background: linear-gradient(180deg, color-mix(in srgb, var(--surface-bg) 88%, white) 0%, var(--surface-bg) 100%);
+        box-shadow: var(--surface-shadow);
+      }
+
+      .panel-inner {
+        padding: var(--space-4);
+      }
+
+      .hero-card {
+        position: relative;
+      }
+
+      .hero-card::before {
+        content: "";
+        position: absolute;
+        left: var(--space-4);
+        right: var(--space-4);
+        top: 0;
+        height: 3px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #CE643D 0%, #E8795A 33%, #1A1815 67%, #FEFDF8 100%);
+      }
+
+      .eyebrow {
+        margin-bottom: var(--space-2);
+        color: var(--muted);
+        font-size: var(--label-size);
+        line-height: var(--label-line);
+        letter-spacing: var(--label-track);
+        text-transform: uppercase;
+      }
+
+      .site-title,
+      .section-title {
+        margin: 0;
+        color: var(--ink);
+        font-family: var(--font-display);
+        font-weight: 600;
+      }
+
+      .site-title {
+        font-size: var(--title-size);
+        line-height: var(--title-line);
+        letter-spacing: var(--title-track);
+      }
+
+      .descriptor {
+        margin: var(--space-2) 0 0;
+        max-width: 42ch;
+        color: var(--muted);
+        font-size: var(--body-size);
+        line-height: var(--body-line);
+      }
+
+      .summary {
+        margin: var(--space-3) 0 0;
+        max-width: 56ch;
+        color: var(--muted);
+        font-size: var(--body-size);
+        line-height: var(--body-line);
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        margin: var(--space-3) 0 0;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: calc(4px * 3);
+        padding: 0 var(--space-2);
+        border: 1px solid var(--surface-border);
+        border-radius: var(--radius-pill);
+        background: var(--surface-bg);
+        color: var(--ink);
+        font-size: var(--label-size);
+        line-height: var(--label-line);
+        box-shadow: var(--surface-shadow-soft);
+      }
+
+      .observed-link {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-top: var(--space-4);
+        padding-top: var(--space-3);
+        border-top: 1px solid var(--surface-border);
+        color: var(--muted);
+        font-size: var(--label-size);
+        overflow-wrap: anywhere;
+      }
+
+      .observed-link::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--accent);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);
+      }
+
+      .section-title {
+        font-size: var(--section-size);
+        line-height: var(--section-line);
+        letter-spacing: var(--section-track);
+      }
+
+      .section-subtitle {
+        margin: var(--space-2) 0 var(--space-4);
+        color: var(--muted);
+        font-size: var(--body-size);
+        line-height: var(--body-line);
+      }
+
+      .palette-grid,
+      .theme-mode-grid,
+      .type-list,
+      .component-card,
+      .prompt-list,
+      .mini-grid,
+      .token-table {
+        display: grid;
+        gap: var(--space-2);
+      }
+
+      .palette-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--space-2);
+      }
+
+      .palette-row.neutral-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .theme-mode-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-3);
+      }
+
+      .theme-mode-card {
+        display: grid;
+        gap: var(--space-2);
+        padding: var(--space-3);
+        border: 1px solid var(--surface-border);
+        border-radius: var(--radius-card);
+        background: color-mix(in srgb, var(--surface-bg) 92%, white);
+      }
+
+      .theme-mode-card.is-dark {
+        background: #111111;
+        color: #f4f4f4;
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+
+      .theme-mode-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+      }
+
+      .theme-mode-label {
+        color: var(--subtle);
+        font-size: var(--label-size);
+        line-height: var(--label-line);
+        letter-spacing: var(--label-track);
+        text-transform: uppercase;
+      }
+
+      .theme-mode-card.is-dark .theme-mode-label {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .theme-mode-note {
+        margin: 0;
+        color: var(--muted);
+        font-size: calc(var(--body-size) - 1px);
+        line-height: calc(var(--body-line) - 4px);
+      }
+
+      .theme-mode-card.is-dark .theme-mode-note {
+        color: rgba(255, 255, 255, 0.82);
+      }
+
+      .theme-swatch-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: var(--space-2);
+      }
+
+      .theme-swatch {
+        display: grid;
+        gap: 6px;
+      }
+
+      .theme-swatch-box {
+        height: 72px;
+        border-radius: calc(var(--radius-card) - 4px);
+        border: 1px solid color-mix(in srgb, var(--surface-border-strong) 75%, transparent);
+      }
+
+      .theme-mode-card.is-dark .theme-swatch-box {
+        border-color: rgba(255, 255, 255, 0.14);
+      }
+
+      .theme-swatch-name {
+        color: inherit;
+        font-size: 12px;
+        line-height: 1.3;
+      }
+
+      .theme-swatch-value {
+        color: var(--subtle);
+        font-size: 11px;
+        line-height: 1.3;
+      }
+
+      .theme-mode-card.is-dark .theme-swatch-value {
+        color: rgba(255, 255, 255, 0.62);
+      }
+
+      .swatch {
+        display: grid;
+        gap: var(--space-2);
+      }
+
+      .swatch-box {
+        min-height: calc(4px * 12);
+        border-radius: var(--radius-card);
+        border: 1px solid color-mix(in srgb, var(--surface-border-strong) 75%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 4%, transparent);
+      }
+
+      .swatch-label,
+      .token-heading,
+      .prompt-card strong,
+      .card-preview h4 {
+        color: var(--ink);
+        font-family: var(--font-display);
+        font-size: var(--body-size);
+        line-height: var(--body-line);
+        font-weight: 600;
+      }
+
+      .swatch-meta,
+      .type-metrics,
+      .mini-label,
+      .copy-state,
+      .file-tab,
+      .ghost-button,
+      .segmented button {
+        color: var(--muted);
+        font-size: var(--label-size);
+        line-height: var(--label-line);
+      }
+
+      .type-row {
+        display: grid;
+        grid-template-columns: 72px minmax(0, 1fr) auto;
+        gap: var(--space-2);
+        align-items: baseline;
+        padding: var(--space-2) 0;
+        border-top: 1px solid var(--surface-border);
+      }
+
+      .type-row:first-child,
+      .mini-row:first-child,
+      .token-row:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+
+      .type-role {
+        color: var(--muted);
+        font-size: var(--label-size);
+        line-height: var(--label-line);
+        letter-spacing: var(--label-track);
+        text-transform: uppercase;
+      }
+
+      .type-sample {
+        color: var(--ink);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .split-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4);
+      }
+
+      .token-row,
+      .mini-row {
+        display: grid;
+        gap: var(--space-2);
+        align-items: start;
+        padding-top: var(--space-2);
+        border-top: 1px solid var(--surface-border);
+      }
+
+      .token-row {
+        grid-template-columns: 1fr auto;
+      }
+
+      .mini-row {
+        grid-template-columns: 88px minmax(0, 1fr);
+      }
+
+      .mini-content,
+      .prompt-card p,
+      .card-preview p {
+        color: var(--muted);
+        font-size: var(--body-size);
+        line-height: var(--body-line);
+      }
+
+      .radius-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-2);
+      }
+
+      .radius-card,
+      .prompt-card {
+        padding: var(--space-3);
+        border: 1px solid var(--surface-border);
+        border-radius: var(--radius-card);
+        background: var(--surface-bg-muted);
+        box-shadow: var(--surface-shadow-soft);
+      }
+
+      .radius-demo {
+        aspect-ratio: 1;
+        width: 100%;
+        border: 1px solid var(--surface-border-strong);
+        background: var(--surface-bg);
+      }
+
+      .radius-name {
+        margin-top: var(--space-2);
+        color: var(--ink);
+        font-size: var(--body-size);
+        line-height: var(--body-line);
+        font-weight: 600;
+      }
+
+      .radius-value {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: var(--label-size);
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+      }
+
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: var(--button-height);
+        padding: 0 var(--space-3);
+        border-radius: var(--button-radius);
+        font-family: var(--font-body);
+        font-size: var(--button-font-size);
+        font-weight: var(--button-weight);
+        line-height: 1;
+        letter-spacing: normal;
+      }
+
+      .cta-primary {
+        border: 1px solid transparent;
+        background: #171717;
+        color: #ffffff;
+        border-radius: 50%;
+      }
+
+      .cta-secondary {
+        border: 1px solid #171717;
+        background: #ffffff;
+        color: #171717;
+        border-radius: 50%;
+        box-shadow: var(--surface-shadow-soft);
+      }
+
+      .card-preview {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid color-mix(in srgb, var(--surface-border-strong) 72%, transparent);
+        background: var(--surface-bg);
+        color: var(--ink);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 2px rgba(0, 0, 0, 0.04), 0 8px 8px -8px rgba(0, 0, 0, 0.04);
+      }
+
+      .card-preview h4 {
+        margin: 0 0 var(--space-1);
+      }
+
+      .source-shell {
+        position: sticky;
+        top: var(--page-padding);
+      }
+
+      .source-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4) var(--space-2);
+        border-bottom: 1px solid var(--surface-border);
+      }
+
+      .file-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px var(--space-3);
+      }
+
+      .file-tab {
+        padding: 0 0 var(--space-2);
+        border-bottom: 2px solid transparent;
+      }
+
+      .file-tab.active {
+        color: var(--ink);
+        border-bottom-color: var(--ink);
+        font-weight: 600;
+      }
+
+      .source-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-4);
+        border-bottom: 1px solid var(--surface-border);
+      }
+
+      .segmented {
+        display: inline-flex;
+        padding: 3px;
+        border: 1px solid var(--surface-border);
+        border-radius: var(--radius-pill);
+        background: var(--surface-bg-muted);
+      }
+
+      .segmented button {
+        border: 0;
+        border-radius: var(--radius-pill);
+        background: transparent;
+        padding: 6px 12px;
+        cursor: pointer;
+      }
+
+      .segmented button.is-active {
+        background: var(--surface-bg);
+        color: var(--ink);
+        box-shadow: var(--surface-shadow-soft);
+      }
+
+      .toolbar-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        margin-left: auto;
+      }
+
+      .ghost-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border: 1px solid var(--surface-border);
+        border-radius: 2px;
+        background: var(--surface-bg);
+        box-shadow: var(--surface-shadow-soft);
+        cursor: pointer;
+      }
+
+      .source-body {
+        max-height: calc(100vh - (var(--page-padding) * 2) - 120px);
+        overflow: auto;
+      }
+
+      .source-view,
+      .rendered-view {
+        margin: 0;
+        padding: var(--space-4);
+      }
+
+      .source-view {
+        color: var(--ink);
+        font-family: var(--font-mono);
+        font-size: var(--source-size);
+        line-height: var(--source-line);
+        white-space: pre-wrap;
+        word-break: break-word;
+        background: var(--surface-bg);
+      }
+
+      .rendered-view {
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: var(--body-size);
+        line-height: var(--body-line);
+        background: var(--surface-bg);
+      }
+
+      .rendered-view[hidden],
+      .source-view[hidden] {
+        display: none;
+      }
+
+      .rendered-view h2,
+      .rendered-view h3 {
+        margin: var(--space-4) 0 var(--space-2);
+        color: var(--ink);
+        font-family: var(--font-display);
+        font-weight: 600;
+      }
+
+      .rendered-view h2 {
+        font-size: var(--section-size);
+        line-height: var(--section-line);
+        letter-spacing: var(--section-track);
+      }
+
+      .rendered-view h2:first-child {
+        margin-top: 0;
+      }
+
+      .rendered-view h3 {
+        color: var(--muted);
+        font-size: calc(32px - 4px);
+        line-height: calc(32px - 4px);
+      }
+
+      .rendered-view p,
+      .rendered-view li {
+        color: var(--muted);
+      }
+
+      .rendered-view ul,
+      .rendered-view ol {
+        margin: 0 0 var(--space-3) 20px;
+        padding: 0;
+      }
+
+      .rendered-view table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: var(--space-2) 0 var(--space-4);
+      }
+
+      .rendered-view th,
+      .rendered-view td {
+        padding: var(--space-2) var(--space-2);
+        border: 1px solid var(--surface-border);
+        text-align: left;
+        vertical-align: top;
+        font-size: var(--label-size);
+        line-height: var(--label-line);
+      }
+
+      .rendered-view th {
+        color: var(--ink);
+        background: var(--surface-bg-muted);
+      }
+
+      .rendered-view code {
+        padding: 0.14em 0.4em;
+        border-radius: 2px;
+        background: var(--surface-bg-muted);
+        color: var(--ink);
+        font-family: var(--font-mono);
+        font-size: 0.92em;
+      }
+
+      @media (max-width: 1120px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .source-shell {
+          position: relative;
+          top: 0;
+        }
+
+        .source-body {
+          max-height: none;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .shell {
+          width: min(100vw - (6px * 2), 100%);
+          padding-top: 6px;
+        }
+
+        .panel-inner,
+        .source-view,
+        .rendered-view {
+          padding-left: var(--space-3);
+          padding-right: var(--space-3);
+        }
+
+        .palette-row,
+        .palette-row.neutral-row,
+        .theme-mode-grid,
+        .theme-swatch-row,
+        .split-card,
+        .radius-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .type-row,
+        .mini-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <div class="layout">
+        <section class="stack">
+          <article class="panel hero-card">
+            <div class="panel-inner">
+              <div class="eyebrow">Design Preview</div>
+              <h1 class="site-title">BOOX Chinese Homepage</h1>
+              <p class="descriptor">BOOX uses a restrained premium-product language built around large, carefully lit device pho...</p>
+              <div class="chip-row"><span class="chip">Full-screen hero photography wit...</span><span class="chip">Warm off-white and near-black fo...</span><span class="chip">Serif display type is reserved f...</span><span class="chip">Sections are wide and unframed,...</span><span class="chip">Product imagery is functional co...</span><span class="chip">Motion is slow and controlled: f...</span></div>
+              <p class="summary">Visual density is intentionally low. Product names and editorial claims sit in large open fields, while detailed information is grouped into grids only after the product has been visually established. Corners stay almost square, borders are faint, shadows are rare, and color is used as emphasis rather than decoration.</p>
+              <a class="observed-link" href="https://zh.boox.com/" target="_blank" rel="noreferrer">https://zh.boox.com/</a>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-inner">
+              <h2 class="section-title">Palette</h2>
+              <p class="section-subtitle">Roles and neutrals rendered using the extracted design system rather than a separate display theme.</p>
+              <div class="palette-grid"><div class="palette-row"><div class="swatch">
+    <div class="swatch-box" style="background:#CE643D;"></div>
+    <div class="swatch-label">Terracotta</div>
+    <div class="swatch-meta">
+      <span>#CE643D</span>
+      <span>Primary action</span>
+    </div>
+  </div><div class="swatch">
+    <div class="swatch-box" style="background:#E8795A;"></div>
+    <div class="swatch-label">Light terracotta</div>
+    <div class="swatch-meta">
+      <span>#E8795A</span>
+      <span>Primary action hover</span>
+    </div>
+  </div><div class="swatch">
+    <div class="swatch-box" style="background:#1A1815;"></div>
+    <div class="swatch-label">Ink black</div>
+    <div class="swatch-meta">
+      <span>#1A1815</span>
+      <span>Main ink</span>
+    </div>
+  </div></div><div class="palette-row neutral-row"><div class="swatch">
+    <div class="swatch-box" style="background:#FEFDF8;"></div>
+    <div class="swatch-label">Paper white</div>
+    <div class="swatch-meta">
+      <span>#FEFDF8</span>
+      <span>Warm canvas</span>
+    </div>
+  </div><div class="swatch">
+    <div class="swatch-box" style="background:#F8F7F4;"></div>
+    <div class="swatch-label">Stone white</div>
+    <div class="swatch-meta">
+      <span>#F8F7F4</span>
+      <span>Navigation canvas</span>
+    </div>
+  </div><div class="swatch">
+    <div class="swatch-box" style="background:#F5F5F4;"></div>
+    <div class="swatch-label">Soft gray</div>
+    <div class="swatch-meta">
+      <span>#F5F5F4</span>
+      <span>Image backing</span>
+    </div>
+  </div><div class="swatch">
+    <div class="swatch-box" style="background:#1B1A16;"></div>
+    <div class="swatch-label">Charcoal brown</div>
+    <div class="swatch-meta">
+      <span>#1B1A16</span>
+      <span>Footer surface</span>
+    </div>
+  </div></div></div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-inner">
+              <h2 class="section-title">Theme Modes</h2>
+              <p class="section-subtitle">If the product supports light and dark themes, both modes should stay visible in the exported design system and preview.</p>
+              <div class="prompt-card"><strong>Single mode detected</strong><p>No explicit <code>Theme Modes</code> section was detected in the markdown. If the product supports both light and dark themes, document both so the preview can render them side by side.</p></div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-inner">
+              <h2 class="section-title">Typography</h2>
+              <p class="section-subtitle">The preview shell itself now uses the extracted typography stack, sizes, line heights, and tracking.</p>
+              <div class="type-list"><div class="type-row">
+        <div class="type-role">Hero product name</div>
+        <div
+          class="type-sample"
+          style="font-size:44px; line-height:44px; font-weight:700; letter-spacing:normal; font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Arial, sans-serif;"
+        >
+          The quick brown fox jumps
+        </div>
+        <div class="type-metrics">clamp(44px, 7vw, 80px) • 700 • 1.05 / 84px at desktop</div>
+      </div><div class="type-row">
+        <div class="type-role">Dark CTA title</div>
+        <div
+          class="type-sample"
+          style="font-size:48px; line-height:67px; font-weight:700; letter-spacing:normal; font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Arial, sans-serif;"
+        >
+          The quick brown fox jumps
+        </div>
+        <div class="type-metrics">48px • 700 • normal</div>
+      </div><div class="type-row">
+        <div class="type-role">Section heading</div>
+        <div
+          class="type-sample"
+          style="font-size:40px; line-height:48px; font-weight:700; letter-spacing:normal; font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Arial, sans-serif;"
+        >
+          The quick brown fox jumps
+        </div>
+        <div class="type-metrics">40px • 700 • 48px</div>
+      </div><div class="type-row">
+        <div class="type-role">Value-section heading</div>
+        <div
+          class="type-sample"
+          style="font-size:40px; line-height:52px; font-weight:700; letter-spacing:normal; font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Arial, sans-serif;"
+        >
+          The quick brown fox jumps
+        </div>
+        <div class="type-metrics">40px • 700 • 52px</div>
+      </div><div class="type-row">
+        <div class="type-role">Product card name</div>
+        <div
+          class="type-sample"
+          style="font-size:20px; line-height:28px; font-weight:700; letter-spacing:normal; font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Arial, sans-serif;"
+        >
+          The quick brown fox jumps
+        </div>
+        <div class="type-metrics">20px • 700 • 28px</div>
+      </div><div class="type-row">
+        <div class="type-role">Body / description</div>
+        <div
+          class="type-sample"
+          style="font-size:14px; line-height:20px; font-weight:400; letter-spacing:normal; font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Arial, sans-serif;"
+        >
+          The quick brown fox jumps
+        </div>
+        <div class="type-metrics">14px to 16px • 400 • 20px to 1.6</div>
+      </div><div class="type-row">
+        <div class="type-role">Navigation</div>
+        <div
+          class="type-sample"
+          style="font-size:13px; line-height:13px; font-weight:500; letter-spacing:0.03em; font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Arial, sans-serif;"
+        >
+          The quick brown fox jumps
+        </div>
+        <div class="type-metrics">13px • 500 • 1</div>
+      </div><div class="type-row">
+        <div class="type-role">Label / badge</div>
+        <div
+          class="type-sample"
+          style="font-size:12px; line-height:12px; font-weight:400; letter-spacing:0.1em; font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Arial, sans-serif;"
+        >
+          The quick brown fox jumps
+        </div>
+        <div class="type-metrics">11px to 12px • 400 to 600 • 1.5</div>
+      </div></div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-inner">
+              <h2 class="section-title">Spacing &amp; Shape</h2>
+              <p class="section-subtitle">Spacing, panel padding, and radius tokens are mapped directly from the layout rules in the markdown.</p>
+              <div class="split-card">
+    <div>
+      <h3 class="token-heading">Spacing</h3>
+      <div class="token-table"><div class="token-row">
+        <span>Base unit</span>
+        <span>4px</span>
+      </div><div class="token-row">
+        <span>Step 2</span>
+        <span>6px</span>
+      </div><div class="token-row">
+        <span>Step 3</span>
+        <span>8px</span>
+      </div><div class="token-row">
+        <span>Step 4</span>
+        <span>12px</span>
+      </div><div class="token-row">
+        <span>Step 5</span>
+        <span>16px</span>
+      </div></div>
+    </div>
+    <div>
+      <h3 class="token-heading">Border Radius</h3>
+      <div class="radius-grid"><div class="radius-card">
+        <div class="radius-demo" style="border-radius:2px;"></div>
+        <div class="radius-name">Micro utility</div>
+        <div class="radius-value">2px</div>
+      </div><div class="radius-card">
+        <div class="radius-demo" style="border-radius:4px;"></div>
+        <div class="radius-name">Standard module</div>
+        <div class="radius-value">4px</div>
+      </div><div class="radius-card">
+        <div class="radius-demo" style="border-radius:50%;"></div>
+        <div class="radius-name">Category rail</div>
+        <div class="radius-value">50%</div>
+      </div><div class="radius-card">
+        <div class="radius-demo" style="border-radius:50%;"></div>
+        <div class="radius-name">CTA pill</div>
+        <div class="radius-value">50%</div>
+      </div></div>
+    </div>
+  </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-inner">
+              <h2 class="section-title">Components</h2>
+              <p class="section-subtitle">Buttons and cards use the documented height, weight, radius, colors, and surface treatment.</p>
+              <div class="component-card">
+    <div class="button-row">
+      <span class="cta cta-primary">Start Deploying</span>
+      <span class="cta cta-secondary">Get a Demo</span>
+    </div>
+    <div class="card-preview">
+      <h4>System Card Preview</h4>
+      <p>White framed module with restrained shadow and precise spacing.</p>
+    </div>
+  </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-inner">
+              <h2 class="section-title">System Notes</h2>
+              <p class="section-subtitle">Responsive behavior and depth rules stay visible while keeping the overall proportions calm and readable.</p>
+              <div class="split-card">
+    <div>
+      <h3 class="token-heading">Breakpoints</h3>
+      <div class="mini-grid"><div class="mini-row">
+            <div class="mini-label">Mobile</div>
+            <div class="mini-content"><strong>Observed 390px</strong><br />Navigation becomes 63px, desktop links disappear, menu opens an overlay, hero becomes full viewport, hero title is 44px, long hero description is hidden.</div>
+          </div><div class="mini-row">
+            <div class="mini-label">Tablet</div>
+            <div class="mini-content"><strong>Inferred 768px to 1023px</strong><br />Preserve the hero composition, reduce grid columns and navigation density before mobile menu takes over.</div>
+          </div><div class="mini-row">
+            <div class="mini-label">Desktop</div>
+            <div class="mini-content"><strong>1024px+</strong><br />70px navigation, multi-column mega panels, three-column product layout, four-cell feature grid, full large-type hero.</div>
+          </div></div>
+    </div>
+    <div>
+      <h3 class="token-heading">Elevation</h3>
+      <div class="mini-grid"><div class="mini-row">
+            <div class="mini-label">Flat</div>
+            <div class="mini-content"><strong>Background field, no shadow, no border</strong><br />Product grids, feature cells, most editorial sections.</div>
+          </div><div class="mini-row">
+            <div class="mini-label">Divider</div>
+            <div class="mini-content"><strong>1px low-opacity ink line</strong><br />Feature-column separation and review-card outline.</div>
+          </div><div class="mini-row">
+            <div class="mini-label">Glass</div>
+            <div class="mini-content"><strong>Low-opacity white fill, blur, faint white border</strong><br />Hero navigation and circular carousel arrows.</div>
+          </div><div class="mini-row">
+            <div class="mini-label">Card</div>
+            <div class="mini-content"><strong>2px corners, small border; shadow only on hover</strong><br />Testimonials and transient information cards.</div>
+          </div></div>
+    </div>
+  </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-inner">
+              <h2 class="section-title">Prompt Guide</h2>
+              <p class="section-subtitle">Prompt snippets are shown in the same typography and spacing language as the extracted design system.</p>
+              <div class="prompt-list"><div class="prompt-card"><strong>Quick Summary</strong><p>Create a premium e-ink product homepage that feels like a calm product editorial, not a SaaS dashboard. Lead with full-screen real photography, a translucent fixed navigation bar, and large serif product names. Alternate warm paper-white editorial sections with near-black image or video bands. Use terracotta only for primary actions and active states. Keep radius very small, shadows scarce, and information density deliberately low. Let wide spacing, material photography, and restrained motion do the work.</p></div><div class="prompt-card">
+            <strong>Hero</strong>
+            <p>&quot;Build a full-viewport e-ink device hero with a real product photograph as the entire background, a left-aligned 80px serif product name, 11px translucent label, one short supporting line, and paired 160px outline/terracotta actions. Place a 70px glass fixed nav over it.&quot;</p>
+          </div><div class="prompt-card">
+            <strong>Card</strong>
+            <p>&quot;Build an editorial product item with a near-square-corner 3:4 pale-gray image stage, subtle 1.05 hover zoom, then open text below with a 20px serif product name, a one-line descriptor, and two small outlined actions. Avoid a card container or shadow.&quot;</p>
+          </div><div class="prompt-card">
+            <strong>Navigation</strong>
+            <p>&quot;Build a 70px fixed nav capped at 1480px. Over hero imagery it is a dark translucent blur with white links; on hover it becomes warm-white and switches icon/text colors. Use flat mega-menu panels with columns, no rounded dropdown shell.&quot;</p>
+          </div><div class="prompt-card">
+            <strong>Button or badge</strong>
+            <p>&quot;Use a 160×49 terracotta primary button with 2px radius and #E8795A hover, plus a same-size transparent hero outline with only a stronger white border on hover.&quot;</p>
+          </div><div class="prompt-card"><strong>Ready-to-Use Prompt</strong><p>Design a Chinese product-service homepage in the visual language of BOOX: calm, premium, paper-adjacent and image-led. Use warm off-white #FEFDF8, ink #1A1815, and a single terracotta action accent #CE643D. Start with a full-bleed real product hero and translucent fixed navigation. Use serif display typography only for product names and editorial statements, low-radius surfaces, thin dividers, minimal shadow, spacious 1480px containers, and slow fade/scroll motion. Avoid dashboard density, card grids, gradients, rounded pills, and decorative blobs.</p></div></div>
+              <div class="split-card" style="margin-top:var(--space-4);">
+    <div>
+      <h3 class="token-heading">Do</h3>
+      <div class="mini-grid"><div class="mini-row"><div class="mini-label">Do</div><div class="mini-content">Use high-quality, large product or environmental photography as the primary composition tool.</div></div><div class="mini-row"><div class="mini-label">Do</div><div class="mini-content">Pair warm off-white pages with one terracotta action color and near-black editorial text.</div></div><div class="mini-row"><div class="mini-label">Do</div><div class="mini-content">Keep corners sharp-to-soft, not playful or pill-heavy.</div></div><div class="mini-row"><div class="mini-label">Do</div><div class="mini-content">Use large section spacing and let product names carry visual weight.</div></div></div>
+    </div>
+    <div>
+      <h3 class="token-heading">Don't</h3>
+      <div class="mini-grid"><div class="mini-row"><div class="mini-label">Don't</div><div class="mini-content">Do not replace photographic hero scenes with gradient blobs, generic illustrations, or dashboard tiles.</div></div><div class="mini-row"><div class="mini-label">Don't</div><div class="mini-content">Do not turn every content group into a rounded card with a drop shadow.</div></div><div class="mini-row"><div class="mini-label">Don't</div><div class="mini-content">Do not spread terracotta across backgrounds, labels, and decorative elements at once.</div></div><div class="mini-row"><div class="mini-label">Don't</div><div class="mini-content">Do not use cool blue-gray as the primary neutral; the system is warm and paper-like.</div></div></div>
+    </div>
+  </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="source-shell">
+          <article class="panel">
+            <div class="source-header">
+              <div class="file-tabs">
+                <span class="file-tab">design-system.md</span>
+                <span class="file-tab active">DESIGN.md</span>
+                <span class="file-tab">Design JSON</span>
+                <span class="file-tab">CSS Variables</span>
+                <span class="file-tab">Design Tokens</span>
+              </div>
+            </div>
+            <div class="source-toolbar">
+              <div class="segmented" role="tablist" aria-label="View Switcher">
+                <button class="is-active" data-view="source" type="button">Source</button>
+                <button data-view="preview" type="button">Preview</button>
+              </div>
+              <div class="toolbar-actions">
+                <button class="ghost-button" id="copyButton" type="button">Copy</button>
+                <a class="ghost-button" href="DESIGN.md" download>Open .md</a>
+                <span class="copy-state" id="copyState"></span>
+              </div>
+            </div>
+            <div class="source-body">
+              <pre class="source-view" id="sourceView"># Design System: BOOX Chinese Homepage
+
+&gt; Observed page: https://zh.boox.com/  
+&gt; Evidence: live DOM, computed styles, readable stylesheet rules, desktop `1280px` and mobile `390px` layouts, carousel and mobile-menu states. Values marked &quot;inferred&quot; are design guidance rather than source declarations.
+
+## 1. Visual Theme &amp; Atmosphere
+
+BOOX uses a restrained premium-product language built around large, carefully lit device photography. The page does not behave like a dense commerce catalog: it alternates cinematic full-bleed scenes with quiet white editorial bands, then returns to dark, image-backed brand sections. The result is technical enough to explain an e-ink product, but emotionally framed around attention, paper, calm, and long-term use.
+
+Visual density is intentionally low. Product names and editorial claims sit in large open fields, while detailed information is grouped into grids only after the product has been visually established. Corners stay almost square, borders are faint, shadows are rare, and color is used as emphasis rather than decoration.
+
+### Key Characteristics
+
+- Full-screen hero photography with a fixed, translucent navigation layer.
+- Warm off-white and near-black form the main contrast; terracotta is the only recurring action accent.
+- Serif display type is reserved for product names and important editorial statements; UI copy remains clean sans-serif.
+- Sections are wide and unframed, with content capped at `1480px`.
+- Product imagery is functional content, not decoration: it carries the color, material, and mood of each block.
+- Motion is slow and controlled: fade transitions, modest image zoom, sticky story cards, and no playful bouncing.
+
+## 2. Color Palette &amp; Roles
+
+| Role | Semantic Name | Value | Usage |
+| --- | --- | --- | --- |
+| Primary action | Terracotta | `#CE643D` | Hero purchase button, active carousel bullet, selected navigation state, accent borders on hover. |
+| Primary action hover | Light terracotta | `#E8795A` | Hero CTA hover state. |
+| Main ink | Ink black | `#1A1815` | Section headings, dark CTA band, high-contrast UI. |
+| Warm canvas | Paper white | `#FEFDF8` | Editorial product and feature sections. |
+| Navigation canvas | Stone white | `#F8F7F4` | Solid fixed navigation after hover or non-hero contexts. |
+| Image backing | Soft gray | `#F5F5F4` | Product-card image stage. |
+| Footer surface | Charcoal brown | `#1B1A16` | Footer and deep brand surface. |
+| Secondary text | Warm graphite | `rgba(67, 61, 55, 0.70)` | Navigation and subdued light-surface copy. |
+| Hero secondary text | Soft white | `rgba(255, 255, 255, 0.50)` | Hero paragraph copy. |
+| Quiet divider | Ink wash | `rgba(0, 0, 0, 0.06)` | Review-card and feature-grid separators. |
+
+### Primary
+
+- `#1A1815` establishes the editorial core. Use it for headings and large dark bands, not for repeated card backgrounds.
+- `#CE643D` is sparse and purposeful. It should identify an action, active state, or product highlight rather than fill large decorative areas.
+
+### Interactive
+
+- Hero primary action: `#CE643D`, changing to `#E8795A` over `0.3s`.
+- Light-surface outlined action: `1px solid #1A1815` or `#CE643D`; the hover treatment fills the border color and reverses text.
+- Hero outlined action: `1px solid rgba(255,255,255,0.25)`; hover only increases border opacity to `0.55`.
+- Navigation active state uses a slightly deeper terracotta source color `#C6623F`.
+
+### Neutral Scale
+
+- `#FEFDF8`: warm editorial canvas.
+- `#F8F7F4`: navigation and neutral chrome.
+- `#F5F5F4`: product-image backing.
+- `#F9F6ED`: warm hover wash for feature cells.
+- `#1B1A16` and `#1A1815`: near-black surfaces, never cool blue-black.
+
+### Surface &amp; Overlay
+
+- Hero navigation begins as `rgba(31,25,19,0.10)` with `backdrop-filter: blur(3.25px)` and white content.
+- On navigation hover, it becomes `#FDFDFB` / stone white, gains a faint bottom border, and switches text and icons back to graphite.
+- Hero badges use `rgba(255,255,255,0.12)` with a `2px` radius, not a pill.
+
+### Theme Modes
+
+#### Light Mode
+
+- Background: `#FEFDF8` and white editorial bands.
+- Surface: white reviews, `#F5F5F4` image fields, sparse `rgba(0,0,0,0.06)` dividers.
+- Text: `#1A1815` with warm-gray secondary copy.
+- Accent: `#CE643D`.
+- Notes: this is the dominant content mode.
+
+#### Dark Mode
+
+- Background: `#1A1815` / `#1B1A16`, sometimes over a photographic texture.
+- Surface: dark transparent or image-backed bands rather than elevated dark cards.
+- Text: `#FEFDF8` with white at `80%`, `50%`, `45%`, `30%`, and `15%` opacity for hierarchy.
+- Accent: terracotta remains stable.
+- Notes: dark is section-level art direction, not a user-toggleable site theme observed on the page.
+
+### Shadows &amp; Depth
+
+- Default sections and product cards are flat. Separation comes from whitespace and color fields.
+- Fixed light navigation: `0 1px 3px rgba(0,0,0,0.04)`.
+- Review hover: `0 4px 16px rgba(0,0,0,0.08)` plus terracotta-tinted border.
+- Sticky story scene: `0 25px 50px -12px rgba(0,0,0,0.18)`.
+- The only glass effect is the hero navigation and circular hero arrows.
+
+## 3. Typography Rules
+
+### Font Family
+
+- Primary UI: `Outfit-Medium, MiSans, sans-serif` observed as the page default.
+- Serif display: `Playfair Display, Noto Serif SC, Georgia, serif` for product names and editorial titles.
+- Chinese fallback: `Noto Serif SC` for serif and `Noto Sans SC` / `MiSans` for sans text.
+- Monospace: none used in the visual system.
+
+### Hierarchy
+
+| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Hero product name | Serif display | `clamp(44px, 7vw, 80px)` | `700` | `1.05` / `84px` at desktop | normal | White, paired with a small translucent label. |
+| Dark CTA title | Sans / serif context | `48px` | `700` | normal | normal | Large but compact, used once per section. |
+| Section heading | Sans | `40px` | `700` | `48px` | normal | Wide editorial sections. |
+| Value-section heading | Sans | `40px` | `700` | `52px` | normal | Supports a deliberate two-line statement. |
+| Product card name | Serif display | `20px` | `700` | `28px` | normal | Sits under image, not over it. |
+| Body / description | Sans | `14px` to `16px` | `400` | `20px` to `1.6` | normal | Light density; hero description is limited to `420px`. |
+| Navigation | Sans | `13px` | `500` | `1` | `0.03em` | Small, controlled, no oversized menu labels. |
+| Label / badge | Sans | `11px` to `12px` | `400` to `600` | `1.5` | `0` to `0.1em` | Labels appear as restrained metadata. |
+
+### Principles
+
+- Use serif display type as contrast, not as the default for all headings.
+- Keep Chinese product messaging short and declarative: product name, one sensory line, one practical benefit.
+- Avoid condensed tracking and over-styled uppercase. The small uppercase-like treatment is limited to quiet metadata.
+- Mobile reduces hero type to `44px` while keeping the hero atmospheric; it hides the longer hero description rather than squeezing it.
+
+## 4. Component Stylings
+
+### Buttons and Links
+
+- **Primary CTA:** minimum width `160px`, padding `14px 32px`, `14px` / `500` text, `2px` radius, white text on `#CE643D`.
+- **Hero secondary CTA:** same dimensions, transparent surface, `1px` translucent white border, no fill hover.
+- **Light section action:** approximately `120px × 43px`, `11px 24px` padding, `4px` radius, either ink outline or terracotta outline.
+- **Links:** plain text links with color change only. Do not introduce underlines, pills, or large arrow containers as the default.
+- **Carousel control:** `40px` circular glass button with `blur(4px)`, a translucent white fill, and a one-step brighter hover.
+
+### Cards and Containers
+
+- Product groups are not enclosed in elevated cards. The image is a `3:4` stage with `2px` radius; the information sits as open text beneath.
+- Review cards are the exception: white background, `2px` radius, `24px` padding, `1px solid rgba(0,0,0,0.06)`.
+- Feature cells use no card fill by default. They are separated by thin vertical rules and gain `#F9F6ED` only on hover.
+- Avoid nested surfaces. Use page-wide background changes before introducing a card.
+
+### Inputs and Interactive Controls
+
+- No persistent input field is a homepage focus. Utility icons carry search, profile, and cart actions.
+- Selected navigation and carousel state use color, not heavy borders or elevated tabs.
+- Mobile menu locks body scrolling and opens a full-height `rgba(8,8,8,0.34)` overlay below the fixed navigation.
+
+### Navigation
+
+- Fixed at the top, `70px` desktop and about `63px` mobile.
+- Content max-width is `1480px` with `20px` side padding.
+- Hero state is translucent, dark-tinted, blurred, and white; hover flips the entire bar to an opaque warm-white service state.
+- Desktop navigation has top-level product categories plus hover-open mega panels. Mega panels are flat `#FCFCFA` fields with a faint bottom border, multi-column link lists, product badges, and no floating rounded container.
+- Mobile hides the desktop links, keeps logo and utility actions, and exposes a `36px` menu button.
+
+### Image Treatment
+
+- Use real product photography, material-rich environmental shots, and simple device-focused compositions.
+- Hero art is full-bleed and carries its own palette; copy is placed in negative space rather than inside a card.
+- Product thumbnail images scale from `1` to `1.05` over `0.7s` on hover.
+- Image corners are almost square (`2px` to `4px`) unless a sticky scene module uses a larger `12px` outer radius.
+
+### Distinctive Components
+
+- **Hero carousel:** full viewport, five slides, `fade` effect, `800ms` speed, looping autoplay every `5000ms`, text left, product world right or center, compact line pagination.
+- **Editorial product grid:** a calm heading and two text links lead into a three-column set of `3:4` product photographs and open metadata.
+- **Sticky scene stack:** successive visual stories use sticky cards with deep shadows, turning scroll into a controlled gallery rather than a conventional card list.
+- **Feature stat grid:** four factual benefits presented as high-whitespace cells; icon treatment turns terracotta only on hover.
+- **Dark video and CTA bands:** full-width contrast moments that reset the page rhythm before moving into testimonials or the footer.
+
+## 5. Layout Principles
+
+### Spacing System
+
+- Base unit: inferred `4px`.
+- Repeated spacing values: `8`, `10`, `12`, `16`, `20`, `24`, `28`, `32`, `40`, `48`, `72`, `80`, `112`, `128`, and `140px`.
+- The rhythm deliberately becomes generous at section level: hero top padding `130px`, editorial sections `112px` vertical, dark CTA approximately `140px` vertical at the observed viewport.
+
+### Grid &amp; Container
+
+- Primary container: `max-width: 1480px; margin: 0 auto; padding: 0 20px`.
+- Desktop product cards: three equal columns; observed at `1280px`, each group was about `403px` wide.
+- Feature grid: four desktop cells, two columns on mobile.
+- Mobile product grid collapses to a single `390px` column with `20px` gaps.
+- Full-bleed hero, video, CTA, and footer sections deliberately break the content container.
+
+### Whitespace Philosophy
+
+- Let images establish scale first, then let copy breathe in the surrounding field.
+- Section titles align with the container edge; primary CTA groups are compact and do not span the page.
+- Use band-to-band contrast rather than stacked rounded modules to create segmentation.
+- Long copy remains narrow. The hero description is only `420px` wide on desktop and is removed on mobile.
+
+### Border Radius Scale
+
+- Micro: `2px` for hero labels, hero and product image stages, review cards.
+- Standard: `4px` for simple outlined buttons and internal story-image clipping.
+- Large: `12px` only for the outer sticky story card.
+- Pill: `50%` for floating navigation arrows and social controls; do not apply pill shapes to normal CTAs.
+
+## 6. Depth &amp; Elevation
+
+| Level | Treatment | Use |
+| --- | --- | --- |
+| Flat | Background field, no shadow, no border | Product grids, feature cells, most editorial sections. |
+| Divider | `1px` low-opacity ink line | Feature-column separation and review-card outline. |
+| Glass | Low-opacity white fill, blur, faint white border | Hero navigation and circular carousel arrows. |
+| Card | `2px` corners, small border; shadow only on hover | Testimonials and transient information cards. |
+| Story | `0 25px 50px -12px rgba(0,0,0,0.18)` | Sticky image-led scroll scenes. |
+
+### Depth Principles
+
+- Do not use shadow as the default separation tool.
+- Use blur only on UI that must float over photography.
+- Prefer a single photographic plane or a clean color field behind content.
+- The page earns high elevation only where scrolling is intended to feel cinematic.
+
+## 7. Do&#39;s and Don&#39;ts
+
+### Do
+
+- Use high-quality, large product or environmental photography as the primary composition tool.
+- Pair warm off-white pages with one terracotta action color and near-black editorial text.
+- Keep corners sharp-to-soft, not playful or pill-heavy.
+- Use large section spacing and let product names carry visual weight.
+- Make scroll effects slow, legible, and subordinate to the product story.
+
+### Don&#39;t
+
+- Do not replace photographic hero scenes with gradient blobs, generic illustrations, or dashboard tiles.
+- Do not turn every content group into a rounded card with a drop shadow.
+- Do not spread terracotta across backgrounds, labels, and decorative elements at once.
+- Do not use cool blue-gray as the primary neutral; the system is warm and paper-like.
+- Do not force long hero explanations into mobile layouts; reduce copy instead.
+
+## 8. Responsive Behavior
+
+### Breakpoints
+
+| Name | Width | Key Changes |
+| --- | --- | --- |
+| Mobile | Observed `390px` | Navigation becomes `63px`, desktop links disappear, menu opens an overlay, hero becomes full viewport, hero title is `44px`, long hero description is hidden. |
+| Tablet | Inferred `768px` to `1023px` | Preserve the hero composition, reduce grid columns and navigation density before mobile menu takes over. |
+| Desktop | `1024px+` | `70px` navigation, multi-column mega panels, three-column product layout, four-cell feature grid, full large-type hero. |
+
+### Touch Targets
+
+- Mobile menu and utility buttons use a `36px` box.
+- Hero actions retain a `49px` height, providing a clear touch target without looking oversized.
+- Carousel arrows remain circular and visually separate from product copy.
+
+### Collapsing Strategy
+
+- Desktop: text navigation, mega panels, visual product grids, and side-by-side image narratives.
+- Tablet: preserve sections and imagery but reduce content columns before shrinking text aggressively.
+- Mobile: use a menu overlay, single-column product cards, two-column feature statistics, and vertical content flow.
+- Keep hero photography full-height. Remove subordinate descriptive copy rather than reduce it below readable density.
+
+## 9. Agent Prompt Guide
+
+### Quick Color Reference
+
+- Primary CTA: `#CE643D`.
+- Background: `#FEFDF8` and `#F8F7F4`.
+- Heading text: `#1A1815`.
+- Body text: `rgba(67,61,55,0.70)` on light; `rgba(255,255,255,0.50)` on dark imagery.
+- Border or ring: `rgba(0,0,0,0.06)` on light; `rgba(255,255,255,0.25)` on hero overlays.
+- Accent: `#CE643D`, with hover `#E8795A`.
+
+### Quick Summary
+
+Create a premium e-ink product homepage that feels like a calm product editorial, not a SaaS dashboard. Lead with full-screen real photography, a translucent fixed navigation bar, and large serif product names. Alternate warm paper-white editorial sections with near-black image or video bands. Use terracotta only for primary actions and active states. Keep radius very small, shadows scarce, and information density deliberately low. Let wide spacing, material photography, and restrained motion do the work.
+
+### Example Component Prompts
+
+- **Hero:** &quot;Build a full-viewport e-ink device hero with a real product photograph as the entire background, a left-aligned 80px serif product name, 11px translucent label, one short supporting line, and paired 160px outline/terracotta actions. Place a 70px glass fixed nav over it.&quot;
+- **Card:** &quot;Build an editorial product item with a near-square-corner `3:4` pale-gray image stage, subtle 1.05 hover zoom, then open text below with a 20px serif product name, a one-line descriptor, and two small outlined actions. Avoid a card container or shadow.&quot;
+- **Navigation:** &quot;Build a 70px fixed nav capped at 1480px. Over hero imagery it is a dark translucent blur with white links; on hover it becomes warm-white and switches icon/text colors. Use flat mega-menu panels with columns, no rounded dropdown shell.&quot;
+- **Button or badge:** &quot;Use a 160×49 terracotta primary button with 2px radius and `#E8795A` hover, plus a same-size transparent hero outline with only a stronger white border on hover.&quot;
+
+### Ready-to-Use Prompt
+
+Design a Chinese product-service homepage in the visual language of BOOX: calm, premium, paper-adjacent and image-led. Use warm off-white `#FEFDF8`, ink `#1A1815`, and a single terracotta action accent `#CE643D`. Start with a full-bleed real product hero and translucent fixed navigation. Use serif display typography only for product names and editorial statements, low-radius surfaces, thin dividers, minimal shadow, spacious `1480px` containers, and slow fade/scroll motion. Avoid dashboard density, card grids, gradients, rounded pills, and decorative blobs.
+
+### Iteration Guide
+
+1. First correct the photographic composition and band sequence before tuning cards or decorative details.
+2. Check that terracotta appears only where an action or selected state needs emphasis.
+3. Reduce radius, borders, and shadows until the page feels closer to an editorial product catalog than a generic web template.
+4. On mobile, preserve the atmosphere with full-height imagery and simplify copy before shrinking type.
+
+## Optional Appendix: Interaction Patterns
+
+- Hero carousel: `fade` effect, `800ms` transition, looping autoplay every `5000ms`, clickable compact line bullets, and explicit previous/next controls.
+- Fade-in content: sections begin at `opacity: 0` and `translateY(30px)`, then resolve over `0.6s` when visible.
+- Product image hover: scale image to `1.05` over `0.7s`.
+- Feature hover: light warm fill, terracotta icon field, and light icon stroke.
+- Navigation: hero navigation changes from translucent/dark to warm-white on hover; desktop product entries can open a mega panel. Mobile menu opens an overlay and applies `overflow: hidden` to the document body.
+
+## Optional Appendix: Observed Pages
+
+- https://zh.boox.com/ - Chinese BOOX homepage, inspected on 2026-06-23.
+</pre>
+              <article class="rendered-view" id="previewView" hidden><section><h2>1. Visual Theme &amp; Atmosphere</h2><p>BOOX uses a restrained premium-product language built around large, carefully lit device photography. The page does not behave like a dense commerce catalog: it alternates cinematic full-bleed scenes with quiet white editorial bands, then returns to dark, image-backed brand sections. The result is technical enough to explain an e-ink product, but emotionally framed around attention, paper, calm, and long-term use.</p><p>Visual density is intentionally low. Product names and editorial claims sit in large open fields, while detailed information is grouped into grids only after the product has been visually established. Corners stay almost square, borders are faint, shadows are rare, and color is used as emphasis rather than decoration.</p><h3>Key Characteristics</h3><ul><li>Full-screen hero photography with a fixed, translucent navigation layer.</li><li>Warm off-white and near-black form the main contrast; terracotta is the only recurring action accent.</li><li>Serif display type is reserved for product names and important editorial statements; UI copy remains clean sans-serif.</li><li>Sections are wide and unframed, with content capped at <code>1480px</code>.</li><li>Product imagery is functional content, not decoration: it carries the color, material, and mood of each block.</li><li>Motion is slow and controlled: fade transitions, modest image zoom, sticky story cards, and no playful bouncing.</li></ul></section><section><h2>2. Color Palette &amp; Roles</h2><table><thead><tr><th>Role</th><th>Semantic Name</th><th>Value</th><th>Usage</th></tr></thead><tbody><tr><td>Primary action</td><td>Terracotta</td><td><code>#CE643D</code></td><td>Hero purchase button, active carousel bullet, selected navigation state, accent borders on hover.</td></tr><tr><td>Primary action hover</td><td>Light terracotta</td><td><code>#E8795A</code></td><td>Hero CTA hover state.</td></tr><tr><td>Main ink</td><td>Ink black</td><td><code>#1A1815</code></td><td>Section headings, dark CTA band, high-contrast UI.</td></tr><tr><td>Warm canvas</td><td>Paper white</td><td><code>#FEFDF8</code></td><td>Editorial product and feature sections.</td></tr><tr><td>Navigation canvas</td><td>Stone white</td><td><code>#F8F7F4</code></td><td>Solid fixed navigation after hover or non-hero contexts.</td></tr><tr><td>Image backing</td><td>Soft gray</td><td><code>#F5F5F4</code></td><td>Product-card image stage.</td></tr><tr><td>Footer surface</td><td>Charcoal brown</td><td><code>#1B1A16</code></td><td>Footer and deep brand surface.</td></tr><tr><td>Secondary text</td><td>Warm graphite</td><td><code>rgba(67, 61, 55, 0.70)</code></td><td>Navigation and subdued light-surface copy.</td></tr><tr><td>Hero secondary text</td><td>Soft white</td><td><code>rgba(255, 255, 255, 0.50)</code></td><td>Hero paragraph copy.</td></tr><tr><td>Quiet divider</td><td>Ink wash</td><td><code>rgba(0, 0, 0, 0.06)</code></td><td>Review-card and feature-grid separators.</td></tr></tbody></table><h3>Primary</h3><ul><li><code>#1A1815</code> establishes the editorial core. Use it for headings and large dark bands, not for repeated card backgrounds.</li><li><code>#CE643D</code> is sparse and purposeful. It should identify an action, active state, or product highlight rather than fill large decorative areas.</li></ul><h3>Interactive</h3><ul><li>Hero primary action: <code>#CE643D</code>, changing to <code>#E8795A</code> over <code>0.3s</code>.</li><li>Light-surface outlined action: <code>1px solid #1A1815</code> or <code>#CE643D</code>; the hover treatment fills the border color and reverses text.</li><li>Hero outlined action: <code>1px solid rgba(255,255,255,0.25)</code>; hover only increases border opacity to <code>0.55</code>.</li><li>Navigation active state uses a slightly deeper terracotta source color <code>#C6623F</code>.</li></ul><h3>Neutral Scale</h3><ul><li><code>#FEFDF8</code>: warm editorial canvas.</li><li><code>#F8F7F4</code>: navigation and neutral chrome.</li><li><code>#F5F5F4</code>: product-image backing.</li><li><code>#F9F6ED</code>: warm hover wash for feature cells.</li><li><code>#1B1A16</code> and <code>#1A1815</code>: near-black surfaces, never cool blue-black.</li></ul><h3>Surface &amp; Overlay</h3><ul><li>Hero navigation begins as <code>rgba(31,25,19,0.10)</code> with <code>backdrop-filter: blur(3.25px)</code> and white content.</li><li>On navigation hover, it becomes <code>#FDFDFB</code> / stone white, gains a faint bottom border, and switches text and icons back to graphite.</li><li>Hero badges use <code>rgba(255,255,255,0.12)</code> with a <code>2px</code> radius, not a pill.</li></ul><h3>Theme Modes</h3><p>#### Light Mode</p><ul><li>Background: <code>#FEFDF8</code> and white editorial bands.</li><li>Surface: white reviews, <code>#F5F5F4</code> image fields, sparse <code>rgba(0,0,0,0.06)</code> dividers.</li><li>Text: <code>#1A1815</code> with warm-gray secondary copy.</li><li>Accent: <code>#CE643D</code>.</li><li>Notes: this is the dominant content mode.</li></ul><p>#### Dark Mode</p><ul><li>Background: <code>#1A1815</code> / <code>#1B1A16</code>, sometimes over a photographic texture.</li><li>Surface: dark transparent or image-backed bands rather than elevated dark cards.</li><li>Text: <code>#FEFDF8</code> with white at <code>80%</code>, <code>50%</code>, <code>45%</code>, <code>30%</code>, and <code>15%</code> opacity for hierarchy.</li><li>Accent: terracotta remains stable.</li><li>Notes: dark is section-level art direction, not a user-toggleable site theme observed on the page.</li></ul><h3>Shadows &amp; Depth</h3><ul><li>Default sections and product cards are flat. Separation comes from whitespace and color fields.</li><li>Fixed light navigation: <code>0 1px 3px rgba(0,0,0,0.04)</code>.</li><li>Review hover: <code>0 4px 16px rgba(0,0,0,0.08)</code> plus terracotta-tinted border.</li><li>Sticky story scene: <code>0 25px 50px -12px rgba(0,0,0,0.18)</code>.</li><li>The only glass effect is the hero navigation and circular hero arrows.</li></ul></section><section><h2>3. Typography Rules</h2><h3>Font Family</h3><ul><li>Primary UI: <code>Outfit-Medium, MiSans, sans-serif</code> observed as the page default.</li><li>Serif display: <code>Playfair Display, Noto Serif SC, Georgia, serif</code> for product names and editorial titles.</li><li>Chinese fallback: <code>Noto Serif SC</code> for serif and <code>Noto Sans SC</code> / <code>MiSans</code> for sans text.</li><li>Monospace: none used in the visual system.</li></ul><h3>Hierarchy</h3><table><thead><tr><th>Role</th><th>Font</th><th>Size</th><th>Weight</th><th>Line Height</th><th>Letter Spacing</th><th>Notes</th></tr></thead><tbody><tr><td>Hero product name</td><td>Serif display</td><td><code>clamp(44px, 7vw, 80px)</code></td><td><code>700</code></td><td><code>1.05</code> / <code>84px</code> at desktop</td><td>normal</td><td>White, paired with a small translucent label.</td></tr><tr><td>Dark CTA title</td><td>Sans / serif context</td><td><code>48px</code></td><td><code>700</code></td><td>normal</td><td>normal</td><td>Large but compact, used once per section.</td></tr><tr><td>Section heading</td><td>Sans</td><td><code>40px</code></td><td><code>700</code></td><td><code>48px</code></td><td>normal</td><td>Wide editorial sections.</td></tr><tr><td>Value-section heading</td><td>Sans</td><td><code>40px</code></td><td><code>700</code></td><td><code>52px</code></td><td>normal</td><td>Supports a deliberate two-line statement.</td></tr><tr><td>Product card name</td><td>Serif display</td><td><code>20px</code></td><td><code>700</code></td><td><code>28px</code></td><td>normal</td><td>Sits under image, not over it.</td></tr><tr><td>Body / description</td><td>Sans</td><td><code>14px</code> to <code>16px</code></td><td><code>400</code></td><td><code>20px</code> to <code>1.6</code></td><td>normal</td><td>Light density; hero description is limited to <code>420px</code>.</td></tr><tr><td>Navigation</td><td>Sans</td><td><code>13px</code></td><td><code>500</code></td><td><code>1</code></td><td><code>0.03em</code></td><td>Small, controlled, no oversized menu labels.</td></tr><tr><td>Label / badge</td><td>Sans</td><td><code>11px</code> to <code>12px</code></td><td><code>400</code> to <code>600</code></td><td><code>1.5</code></td><td><code>0</code> to <code>0.1em</code></td><td>Labels appear as restrained metadata.</td></tr></tbody></table><h3>Principles</h3><ul><li>Use serif display type as contrast, not as the default for all headings.</li><li>Keep Chinese product messaging short and declarative: product name, one sensory line, one practical benefit.</li><li>Avoid condensed tracking and over-styled uppercase. The small uppercase-like treatment is limited to quiet metadata.</li><li>Mobile reduces hero type to <code>44px</code> while keeping the hero atmospheric; it hides the longer hero description rather than squeezing it.</li></ul></section><section><h2>4. Component Stylings</h2><h3>Buttons and Links</h3><ul><li><strong>Primary CTA:</strong> minimum width <code>160px</code>, padding <code>14px 32px</code>, <code>14px</code> / <code>500</code> text, <code>2px</code> radius, white text on <code>#CE643D</code>.</li><li><strong>Hero secondary CTA:</strong> same dimensions, transparent surface, <code>1px</code> translucent white border, no fill hover.</li><li><strong>Light section action:</strong> approximately <code>120px × 43px</code>, <code>11px 24px</code> padding, <code>4px</code> radius, either ink outline or terracotta outline.</li><li><strong>Links:</strong> plain text links with color change only. Do not introduce underlines, pills, or large arrow containers as the default.</li><li><strong>Carousel control:</strong> <code>40px</code> circular glass button with <code>blur(4px)</code>, a translucent white fill, and a one-step brighter hover.</li></ul><h3>Cards and Containers</h3><ul><li>Product groups are not enclosed in elevated cards. The image is a <code>3:4</code> stage with <code>2px</code> radius; the information sits as open text beneath.</li><li>Review cards are the exception: white background, <code>2px</code> radius, <code>24px</code> padding, <code>1px solid rgba(0,0,0,0.06)</code>.</li><li>Feature cells use no card fill by default. They are separated by thin vertical rules and gain <code>#F9F6ED</code> only on hover.</li><li>Avoid nested surfaces. Use page-wide background changes before introducing a card.</li></ul><h3>Inputs and Interactive Controls</h3><ul><li>No persistent input field is a homepage focus. Utility icons carry search, profile, and cart actions.</li><li>Selected navigation and carousel state use color, not heavy borders or elevated tabs.</li><li>Mobile menu locks body scrolling and opens a full-height <code>rgba(8,8,8,0.34)</code> overlay below the fixed navigation.</li></ul><h3>Navigation</h3><ul><li>Fixed at the top, <code>70px</code> desktop and about <code>63px</code> mobile.</li><li>Content max-width is <code>1480px</code> with <code>20px</code> side padding.</li><li>Hero state is translucent, dark-tinted, blurred, and white; hover flips the entire bar to an opaque warm-white service state.</li><li>Desktop navigation has top-level product categories plus hover-open mega panels. Mega panels are flat <code>#FCFCFA</code> fields with a faint bottom border, multi-column link lists, product badges, and no floating rounded container.</li><li>Mobile hides the desktop links, keeps logo and utility actions, and exposes a <code>36px</code> menu button.</li></ul><h3>Image Treatment</h3><ul><li>Use real product photography, material-rich environmental shots, and simple device-focused compositions.</li><li>Hero art is full-bleed and carries its own palette; copy is placed in negative space rather than inside a card.</li><li>Product thumbnail images scale from <code>1</code> to <code>1.05</code> over <code>0.7s</code> on hover.</li><li>Image corners are almost square (<code>2px</code> to <code>4px</code>) unless a sticky scene module uses a larger <code>12px</code> outer radius.</li></ul><h3>Distinctive Components</h3><ul><li><strong>Hero carousel:</strong> full viewport, five slides, <code>fade</code> effect, <code>800ms</code> speed, looping autoplay every <code>5000ms</code>, text left, product world right or center, compact line pagination.</li><li><strong>Editorial product grid:</strong> a calm heading and two text links lead into a three-column set of <code>3:4</code> product photographs and open metadata.</li><li><strong>Sticky scene stack:</strong> successive visual stories use sticky cards with deep shadows, turning scroll into a controlled gallery rather than a conventional card list.</li><li><strong>Feature stat grid:</strong> four factual benefits presented as high-whitespace cells; icon treatment turns terracotta only on hover.</li><li><strong>Dark video and CTA bands:</strong> full-width contrast moments that reset the page rhythm before moving into testimonials or the footer.</li></ul></section><section><h2>5. Layout Principles</h2><h3>Spacing System</h3><ul><li>Base unit: inferred <code>4px</code>.</li><li>Repeated spacing values: <code>8</code>, <code>10</code>, <code>12</code>, <code>16</code>, <code>20</code>, <code>24</code>, <code>28</code>, <code>32</code>, <code>40</code>, <code>48</code>, <code>72</code>, <code>80</code>, <code>112</code>, <code>128</code>, and <code>140px</code>.</li><li>The rhythm deliberately becomes generous at section level: hero top padding <code>130px</code>, editorial sections <code>112px</code> vertical, dark CTA approximately <code>140px</code> vertical at the observed viewport.</li></ul><h3>Grid &amp; Container</h3><ul><li>Primary container: <code>max-width: 1480px; margin: 0 auto; padding: 0 20px</code>.</li><li>Desktop product cards: three equal columns; observed at <code>1280px</code>, each group was about <code>403px</code> wide.</li><li>Feature grid: four desktop cells, two columns on mobile.</li><li>Mobile product grid collapses to a single <code>390px</code> column with <code>20px</code> gaps.</li><li>Full-bleed hero, video, CTA, and footer sections deliberately break the content container.</li></ul><h3>Whitespace Philosophy</h3><ul><li>Let images establish scale first, then let copy breathe in the surrounding field.</li><li>Section titles align with the container edge; primary CTA groups are compact and do not span the page.</li><li>Use band-to-band contrast rather than stacked rounded modules to create segmentation.</li><li>Long copy remains narrow. The hero description is only <code>420px</code> wide on desktop and is removed on mobile.</li></ul><h3>Border Radius Scale</h3><ul><li>Micro: <code>2px</code> for hero labels, hero and product image stages, review cards.</li><li>Standard: <code>4px</code> for simple outlined buttons and internal story-image clipping.</li><li>Large: <code>12px</code> only for the outer sticky story card.</li><li>Pill: <code>50%</code> for floating navigation arrows and social controls; do not apply pill shapes to normal CTAs.</li></ul></section><section><h2>6. Depth &amp; Elevation</h2><table><thead><tr><th>Level</th><th>Treatment</th><th>Use</th></tr></thead><tbody><tr><td>Flat</td><td>Background field, no shadow, no border</td><td>Product grids, feature cells, most editorial sections.</td></tr><tr><td>Divider</td><td><code>1px</code> low-opacity ink line</td><td>Feature-column separation and review-card outline.</td></tr><tr><td>Glass</td><td>Low-opacity white fill, blur, faint white border</td><td>Hero navigation and circular carousel arrows.</td></tr><tr><td>Card</td><td><code>2px</code> corners, small border; shadow only on hover</td><td>Testimonials and transient information cards.</td></tr><tr><td>Story</td><td><code>0 25px 50px -12px rgba(0,0,0,0.18)</code></td><td>Sticky image-led scroll scenes.</td></tr></tbody></table><h3>Depth Principles</h3><ul><li>Do not use shadow as the default separation tool.</li><li>Use blur only on UI that must float over photography.</li><li>Prefer a single photographic plane or a clean color field behind content.</li><li>The page earns high elevation only where scrolling is intended to feel cinematic.</li></ul></section><section><h2>7. Do&#39;s and Don&#39;ts</h2><h3>Do</h3><ul><li>Use high-quality, large product or environmental photography as the primary composition tool.</li><li>Pair warm off-white pages with one terracotta action color and near-black editorial text.</li><li>Keep corners sharp-to-soft, not playful or pill-heavy.</li><li>Use large section spacing and let product names carry visual weight.</li><li>Make scroll effects slow, legible, and subordinate to the product story.</li></ul><h3>Don&#39;t</h3><ul><li>Do not replace photographic hero scenes with gradient blobs, generic illustrations, or dashboard tiles.</li><li>Do not turn every content group into a rounded card with a drop shadow.</li><li>Do not spread terracotta across backgrounds, labels, and decorative elements at once.</li><li>Do not use cool blue-gray as the primary neutral; the system is warm and paper-like.</li><li>Do not force long hero explanations into mobile layouts; reduce copy instead.</li></ul></section><section><h2>8. Responsive Behavior</h2><h3>Breakpoints</h3><table><thead><tr><th>Name</th><th>Width</th><th>Key Changes</th></tr></thead><tbody><tr><td>Mobile</td><td>Observed <code>390px</code></td><td>Navigation becomes <code>63px</code>, desktop links disappear, menu opens an overlay, hero becomes full viewport, hero title is <code>44px</code>, long hero description is hidden.</td></tr><tr><td>Tablet</td><td>Inferred <code>768px</code> to <code>1023px</code></td><td>Preserve the hero composition, reduce grid columns and navigation density before mobile menu takes over.</td></tr><tr><td>Desktop</td><td><code>1024px+</code></td><td><code>70px</code> navigation, multi-column mega panels, three-column product layout, four-cell feature grid, full large-type hero.</td></tr></tbody></table><h3>Touch Targets</h3><ul><li>Mobile menu and utility buttons use a <code>36px</code> box.</li><li>Hero actions retain a <code>49px</code> height, providing a clear touch target without looking oversized.</li><li>Carousel arrows remain circular and visually separate from product copy.</li></ul><h3>Collapsing Strategy</h3><ul><li>Desktop: text navigation, mega panels, visual product grids, and side-by-side image narratives.</li><li>Tablet: preserve sections and imagery but reduce content columns before shrinking text aggressively.</li><li>Mobile: use a menu overlay, single-column product cards, two-column feature statistics, and vertical content flow.</li><li>Keep hero photography full-height. Remove subordinate descriptive copy rather than reduce it below readable density.</li></ul></section><section><h2>9. Agent Prompt Guide</h2><h3>Quick Color Reference</h3><ul><li>Primary CTA: <code>#CE643D</code>.</li><li>Background: <code>#FEFDF8</code> and <code>#F8F7F4</code>.</li><li>Heading text: <code>#1A1815</code>.</li><li>Body text: <code>rgba(67,61,55,0.70)</code> on light; <code>rgba(255,255,255,0.50)</code> on dark imagery.</li><li>Border or ring: <code>rgba(0,0,0,0.06)</code> on light; <code>rgba(255,255,255,0.25)</code> on hero overlays.</li><li>Accent: <code>#CE643D</code>, with hover <code>#E8795A</code>.</li></ul><h3>Quick Summary</h3><p>Create a premium e-ink product homepage that feels like a calm product editorial, not a SaaS dashboard. Lead with full-screen real photography, a translucent fixed navigation bar, and large serif product names. Alternate warm paper-white editorial sections with near-black image or video bands. Use terracotta only for primary actions and active states. Keep radius very small, shadows scarce, and information density deliberately low. Let wide spacing, material photography, and restrained motion do the work.</p><h3>Example Component Prompts</h3><ul><li><strong>Hero:</strong> &quot;Build a full-viewport e-ink device hero with a real product photograph as the entire background, a left-aligned 80px serif product name, 11px translucent label, one short supporting line, and paired 160px outline/terracotta actions. Place a 70px glass fixed nav over it.&quot;</li><li><strong>Card:</strong> &quot;Build an editorial product item with a near-square-corner <code>3:4</code> pale-gray image stage, subtle 1.05 hover zoom, then open text below with a 20px serif product name, a one-line descriptor, and two small outlined actions. Avoid a card container or shadow.&quot;</li><li><strong>Navigation:</strong> &quot;Build a 70px fixed nav capped at 1480px. Over hero imagery it is a dark translucent blur with white links; on hover it becomes warm-white and switches icon/text colors. Use flat mega-menu panels with columns, no rounded dropdown shell.&quot;</li><li><strong>Button or badge:</strong> &quot;Use a 160×49 terracotta primary button with 2px radius and <code>#E8795A</code> hover, plus a same-size transparent hero outline with only a stronger white border on hover.&quot;</li></ul><h3>Ready-to-Use Prompt</h3><p>Design a Chinese product-service homepage in the visual language of BOOX: calm, premium, paper-adjacent and image-led. Use warm off-white <code>#FEFDF8</code>, ink <code>#1A1815</code>, and a single terracotta action accent <code>#CE643D</code>. Start with a full-bleed real product hero and translucent fixed navigation. Use serif display typography only for product names and editorial statements, low-radius surfaces, thin dividers, minimal shadow, spacious <code>1480px</code> containers, and slow fade/scroll motion. Avoid dashboard density, card grids, gradients, rounded pills, and decorative blobs.</p><h3>Iteration Guide</h3><ol><li>First correct the photographic composition and band sequence before tuning cards or decorative details.</li><li>Check that terracotta appears only where an action or selected state needs emphasis.</li><li>Reduce radius, borders, and shadows until the page feels closer to an editorial product catalog than a generic web template.</li><li>On mobile, preserve the atmosphere with full-height imagery and simplify copy before shrinking type.</li></ol></section><section><h2>Optional Appendix: Interaction Patterns</h2><ul><li>Hero carousel: <code>fade</code> effect, <code>800ms</code> transition, looping autoplay every <code>5000ms</code>, clickable compact line bullets, and explicit previous/next controls.</li><li>Fade-in content: sections begin at <code>opacity: 0</code> and <code>translateY(30px)</code>, then resolve over <code>0.6s</code> when visible.</li><li>Product image hover: scale image to <code>1.05</code> over <code>0.7s</code>.</li><li>Feature hover: light warm fill, terracotta icon field, and light icon stroke.</li><li>Navigation: hero navigation changes from translucent/dark to warm-white on hover; desktop product entries can open a mega panel. Mobile menu opens an overlay and applies <code>overflow: hidden</code> to the document body.</li></ul></section><section><h2>Optional Appendix: Observed Pages</h2><ul><li>https://zh.boox.com/ - Chinese BOOX homepage, inspected on 2026-06-23.</li></ul></section></article>
+            </div>
+          </article>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const sourceView = document.getElementById("sourceView");
+      const previewView = document.getElementById("previewView");
+      const copyButton = document.getElementById("copyButton");
+      const copyState = document.getElementById("copyState");
+      const viewButtons = document.querySelectorAll("[data-view]");
+
+      function setActiveView(view) {
+        const showSource = view === "source";
+        sourceView.hidden = !showSource;
+        previewView.hidden = showSource;
+        viewButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.view === view);
+        });
+      }
+
+      viewButtons.forEach((button) => {
+        button.addEventListener("click", () => setActiveView(button.dataset.view));
+      });
+
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(sourceView.textContent || "");
+          copyState.textContent = "Copied";
+        } catch (error) {
+          copyState.textContent = "Clipboard unavailable";
+        }
+
+        setTimeout(() => {
+          copyState.textContent = "";
+        }, 1400);
+      });
+    </script>
+  </body>
+</html>
