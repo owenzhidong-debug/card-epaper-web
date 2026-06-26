@@ -25,9 +25,9 @@
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Outfit", "MiSans", "Noto Sans SC", Arial, sans-serif; }
-    button, input { font: inherit; }
+    button { font: inherit; }
     button { cursor: pointer; }
-    button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
     [hidden] { display: none !important; }
 
     .logged-in, .workspace { display: none; }
@@ -188,11 +188,6 @@
     .modal { width: min(460px, 100%); padding: 30px; border-radius: var(--radius); background: var(--paper); box-shadow: 0 22px 60px rgba(0,0,0,.24); }
     .modal h2 { margin: 0 0 9px; font-family: "Playfair Display", "Noto Serif SC", Georgia, serif; font-size: 30px; line-height: 1.15; }
     .modal > p { margin: 0 0 24px; color: var(--muted); font-size: 14px; line-height: 1.65; }
-    .field { display: grid; gap: 7px; margin-bottom: 15px; }
-    .field label { font-size: 13px; font-weight: 700; }
-    .field input { height: 44px; border: 1px solid rgba(26,24,21,.18); border-radius: var(--radius); padding: 0 12px; background: #fff; color: var(--ink); }
-    .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(206,100,61,.15); outline: 0; }
-    .form-error { min-height: 18px; color: #b33f25; font-size: 13px; }
     .modal-list { display: grid; gap: 8px; margin-bottom: 21px; }
     .modal-list div { padding: 12px 14px; background: var(--stone); font-size: 14px; line-height: 1.45; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 9px; }
@@ -404,7 +399,7 @@
           <span class="overline">卡片墨水屏</span>
           <h1>你的卡片<br>墨水屏</h1>
           <p>登录后查看设备，发送内容，管理云端文件和系统工具。</p>
-          <button class="button primary" id="loginButton">登录账号</button>
+          <button class="button primary" id="loginButton">登录</button>
           <div class="auth-links"><button class="text-action" data-action="download">下载 App</button><button class="text-action" data-action="support">联系支持</button></div>
         </div>
         <div class="device-scene" aria-hidden="true"><div class="scene-shadow"></div><div class="epaper back"><div class="screen"></div></div><div class="epaper main"><div class="screen"></div></div></div>
@@ -487,7 +482,7 @@
   </main>
 
   <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal"><h2 id="modalTitle">登录账号</h2><p id="modalText">登录后查看账号下已绑定的设备。</p><form id="loginForm"><div class="field"><label for="email">邮箱</label><input id="email" type="email" autocomplete="email" placeholder="name@example.com"></div><div class="field"><label for="password">密码</label><input id="password" type="password" autocomplete="current-password" placeholder="输入密码"></div><div class="form-error" id="formError" role="alert"></div><div class="modal-actions"><button class="button" type="button" id="closeModal">取消</button><button class="button primary" type="submit">登录</button></div></form><div class="modal-list" id="modalList" hidden></div><div class="modal-actions" id="flowActions" hidden><button class="button primary" type="button" id="closeFlow">完成</button></div></div>
+    <div class="modal"><h2 id="modalTitle">登录</h2><p id="modalText">登录后查看账号下已绑定的设备。</p><div class="modal-list" id="modalList" hidden></div><div class="modal-actions" id="flowActions" hidden><button class="button primary" type="button" id="closeFlow">完成</button></div></div>
   </div>
   <div class="toast" id="toast" role="status"></div>
 
@@ -758,25 +753,20 @@
     const modalBackdrop = document.getElementById('modalBackdrop');
     const modalTitle = document.getElementById('modalTitle');
     const modalText = document.getElementById('modalText');
-    const loginForm = document.getElementById('loginForm');
     const modalList = document.getElementById('modalList');
     const flowActions = document.getElementById('flowActions');
-    const formError = document.getElementById('formError');
     const toast = document.getElementById('toast');
     let activeToast = '';
     function showToast(text) { toast.textContent = text; toast.classList.add('show'); window.clearTimeout(showToast.timer); showToast.timer = window.setTimeout(() => toast.classList.remove('show'), 2400); }
     function closeModal() { modalBackdrop.classList.remove('show'); activeToast = ''; }
-    function openLogin() { modalTitle.textContent = '登录账号'; modalText.textContent = '登录后查看账号下已绑定的设备。'; loginForm.hidden = false; modalList.hidden = true; flowActions.hidden = true; formError.textContent = ''; modalBackdrop.classList.add('show'); window.setTimeout(() => document.getElementById('email').focus(), 0); }
-    function openFlow(name) { const flow = flows[name]; if (!flow) return; modalTitle.textContent = flow.title; modalText.textContent = flow.text; loginForm.hidden = true; modalList.hidden = false; flowActions.hidden = false; modalList.innerHTML = flow.items.map(item => `<div>${item}</div>`).join(''); activeToast = flow.toast; modalBackdrop.classList.add('show'); }
+    function openFlow(name) { const flow = flows[name]; if (!flow) return; modalTitle.textContent = flow.title; modalText.textContent = flow.text; modalList.hidden = false; flowActions.hidden = false; modalList.innerHTML = flow.items.map(item => `<div>${item}</div>`).join(''); activeToast = flow.toast; modalBackdrop.classList.add('show'); }
     function setView(name) { document.querySelectorAll('[data-panel]').forEach(panel => panel.classList.toggle('active', panel.dataset.panel === name)); document.querySelectorAll('.nav [data-view]').forEach(tab => tab.classList.toggle('active', tab.dataset.view === name)); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    function login() { document.body.classList.add('is-logged-in'); setView('home'); closeModal(); showToast('已登录，已显示绑定设备'); }
-    document.getElementById('headerLogin').addEventListener('click', openLogin);
-    document.getElementById('loginButton').addEventListener('click', openLogin);
+    function login() { document.body.classList.add('is-logged-in'); setView('home'); closeModal(); showToast('已进入'); }
+    document.getElementById('headerLogin').addEventListener('click', login);
+    document.getElementById('loginButton').addEventListener('click', login);
     document.getElementById('logoutButton').addEventListener('click', () => { document.body.classList.remove('is-logged-in'); showToast('已退出登录'); });
-    document.getElementById('closeModal').addEventListener('click', closeModal);
     document.getElementById('closeFlow').addEventListener('click', () => { const message = activeToast; closeModal(); if (message) showToast(message); });
     modalBackdrop.addEventListener('click', event => { if (event.target === modalBackdrop) closeModal(); });
-    loginForm.addEventListener('submit', event => { event.preventDefault(); const email = document.getElementById('email').value.trim(); const password = document.getElementById('password').value; if (!email || !password) { formError.textContent = '请输入邮箱和密码。'; return; } login(); });
     document.querySelectorAll('[data-action]').forEach(button => button.addEventListener('click', () => openFlow(button.dataset.action)));
     document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
     document.querySelectorAll('[data-device]').forEach(button => button.addEventListener('click', () => { const name = button.dataset.name; document.querySelectorAll('[data-device]').forEach(item => { item.classList.toggle('active-device', item === button); item.setAttribute('aria-pressed', String(item === button)); }); document.getElementById('stageDeviceName').textContent = name; document.getElementById('transferDeviceName').textContent = name; showToast(`已选择 ${name}`); }));
