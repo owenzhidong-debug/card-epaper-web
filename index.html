@@ -1314,6 +1314,7 @@
       grid-template-rows: 42px 122px 1fr 82px;
       background: var(--white);
       overflow: hidden;
+      position: relative;
     }
     .gallery-status {
       padding: 0 18px 0 16px;
@@ -1537,6 +1538,54 @@
       padding: 15px 28px 13px;
       background: var(--paper);
     }
+    .gallery-preview {
+      position: absolute;
+      inset: 0;
+      z-index: 25;
+      display: grid;
+      grid-template-rows: 86px 1fr;
+      background: var(--white);
+    }
+    .gallery-preview.hidden {
+      display: none;
+    }
+    .gallery-preview-top {
+      display: flex;
+      align-items: center;
+      padding: 16px 22px;
+    }
+    .gallery-preview-back {
+      transform: scale(.82);
+      transform-origin: left center;
+    }
+    .gallery-preview-stage {
+      display: grid;
+      place-items: center;
+      padding: 0 24px 34px;
+      overflow: hidden;
+    }
+    .gallery-preview-art {
+      width: 406px;
+      height: 620px;
+      border: 2px solid var(--ink);
+      background: var(--white);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+    .gallery-preview-art .gallery-tile {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      transform: scale(1.85);
+      transform-origin: center;
+      pointer-events: none;
+    }
+    .gallery-preview-art .gallery-tile.flower { transform: scale(2.25); }
+    .gallery-preview-art .gallery-tile.falling { transform: scale(2.05); }
+    .gallery-preview-art .gallery-tile.tower { transform: scale(2.12); }
+    .gallery-preview-art .gallery-tile.reporter { transform: scale(2.2); }
+    .gallery-preview-art .gallery-tile.group { transform: scale(2.05); }
     .pomodoro-screen {
       height: 100%;
       display: grid;
@@ -2436,7 +2485,22 @@
         <div class="page-count" id="galleryPageCount"></div>
         <button type="button" class="pager-button next" id="nextGalleryPage" aria-label="Next gallery page"></button>
       </footer>
+      <div class="gallery-preview hidden" id="galleryPreview" aria-label="Image preview">
+        <div class="gallery-preview-top">
+          <button type="button" class="back-button gallery-preview-back" id="galleryPreviewBack" aria-label="Back to gallery"></button>
+        </div>
+        <div class="gallery-preview-stage">
+          <div class="gallery-preview-art" id="galleryPreviewArt"></div>
+        </div>
+      </div>
     </section>
+    <div class="action-sheet-backdrop" id="galleryActionSheet">
+      <div class="action-sheet">
+        <button type="button" id="setGalleryWallpaper">Set as Wallpaper</button>
+        <button type="button" id="deleteGalleryImage">Delete</button>
+        <button type="button" id="cancelGalleryAction">Cancel</button>
+      </div>
+    </div>
     <section class="pomodoro-screen hidden" id="pomodoroScreen" aria-label="Pomodoro">
       <header class="status" aria-label="Status bar">
         <div>9:41</div>
@@ -2783,6 +2847,10 @@
     };
     const galleryTileTypes = ["flower", "falling", "tower", "faces", "reporter", "group"];
     let galleryPage = 1;
+    let selectedGalleryImage = null;
+    let galleryLongPressTimer = null;
+    let galleryLongPressOpen = false;
+    const deletedGalleryImages = new Set();
     const galleryTotalPages = 8;
 
 
@@ -2814,6 +2882,13 @@
     const backFromApps = document.getElementById("backFromApps");
     const galleryHome = document.getElementById("galleryHome");
     const galleryGrid = document.getElementById("galleryGrid");
+    const galleryPreview = document.getElementById("galleryPreview");
+    const galleryPreviewBack = document.getElementById("galleryPreviewBack");
+    const galleryPreviewArt = document.getElementById("galleryPreviewArt");
+    const galleryActionSheet = document.getElementById("galleryActionSheet");
+    const setGalleryWallpaper = document.getElementById("setGalleryWallpaper");
+    const deleteGalleryImage = document.getElementById("deleteGalleryImage");
+    const cancelGalleryAction = document.getElementById("cancelGalleryAction");
     const prevGalleryPage = document.getElementById("prevGalleryPage");
     const nextGalleryPage = document.getElementById("nextGalleryPage");
     const galleryPageCount = document.getElementById("galleryPageCount");
@@ -3518,10 +3593,46 @@
       appsScreen.classList.remove("hidden");
     }
 
+    function getGalleryPageItems() {
+      return galleryTileTypes.map((type, index) => ({
+        id: `gallery-${galleryPage}-${index}`,
+        type,
+        number: ((galleryPage - 1) * 6) + index + 1
+      })).filter((item) => !deletedGalleryImages.has(item.id));
+    }
+
     function renderGallery() {
       galleryPage = clamp(galleryPage, 1, galleryTotalPages);
-      galleryGrid.innerHTML = galleryTileTypes.map((type, index) => `<button type="button" class="gallery-tile ${type}" aria-label="Image ${((galleryPage - 1) * 6) + index + 1}"></button>`).join("");
+      const items = getGalleryPageItems();
+      galleryGrid.innerHTML = items.map((item) => `<button type="button" class="gallery-tile ${item.type}" data-gallery-id="${item.id}" data-gallery-type="${item.type}" aria-label="Image ${item.number}"></button>`).join("");
       galleryPageCount.textContent = `${galleryPage}/${galleryTotalPages}`;
+    }
+
+    function closeGalleryPreview() {
+      galleryPreview.classList.add("hidden");
+      galleryActionSheet.classList.remove("show");
+      selectedGalleryImage = null;
+    }
+
+    function openGalleryPreview(id, type) {
+      selectedGalleryImage = { id, type };
+      galleryPreviewArt.innerHTML = `<div class="gallery-tile ${type}" aria-hidden="true"></div>`;
+      galleryPreview.classList.remove("hidden");
+    }
+
+    function startGalleryLongPress() {
+      clearTimeout(galleryLongPressTimer);
+      galleryLongPressOpen = false;
+      galleryLongPressTimer = setTimeout(() => {
+        if (!selectedGalleryImage) return;
+        galleryLongPressOpen = true;
+        galleryActionSheet.classList.add("show");
+      }, 520);
+    }
+
+    function cancelGalleryLongPress() {
+      clearTimeout(galleryLongPressTimer);
+      setTimeout(() => { galleryLongPressOpen = false; }, 0);
     }
 
     function showGalleryScreen() {
@@ -3533,6 +3644,7 @@
       wifiScreen.classList.add("hidden");
       readerScreen.classList.add("hidden");
       galleryScreen.classList.remove("hidden");
+      closeGalleryPreview();
       renderGallery();
     }
 
@@ -4077,6 +4189,30 @@
     backHome.addEventListener("click", showHomeScreen);
     backFromApps.addEventListener("click", showHomeScreen);
     galleryHome.addEventListener("click", showHomeScreen);
+    galleryGrid.addEventListener("click", (event) => {
+      const tile = event.target.closest("[data-gallery-id]");
+      if (!tile) return;
+      openGalleryPreview(tile.dataset.galleryId, tile.dataset.galleryType);
+    });
+    galleryPreviewBack.addEventListener("click", closeGalleryPreview);
+    galleryPreviewArt.addEventListener("mousedown", startGalleryLongPress);
+    galleryPreviewArt.addEventListener("touchstart", startGalleryLongPress, { passive: true });
+    galleryPreviewArt.addEventListener("mouseup", cancelGalleryLongPress);
+    galleryPreviewArt.addEventListener("mouseleave", cancelGalleryLongPress);
+    galleryPreviewArt.addEventListener("touchend", cancelGalleryLongPress);
+    galleryPreviewArt.addEventListener("touchmove", cancelGalleryLongPress, { passive: true });
+    setGalleryWallpaper.addEventListener("click", () => {
+      galleryActionSheet.classList.remove("show");
+      showToast("Wallpaper set");
+    });
+    deleteGalleryImage.addEventListener("click", () => {
+      if (!selectedGalleryImage) return;
+      deletedGalleryImages.add(selectedGalleryImage.id);
+      closeGalleryPreview();
+      renderGallery();
+      showToast("Image deleted");
+    });
+    cancelGalleryAction.addEventListener("click", () => galleryActionSheet.classList.remove("show"));
     prevGalleryPage.addEventListener("click", () => {
       if (galleryPage <= 1) return;
       galleryPage -= 1;
