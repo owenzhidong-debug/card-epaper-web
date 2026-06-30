@@ -3999,9 +3999,14 @@
     cancelDelete.addEventListener("click", closeDeleteDialog);
     confirmDelete.addEventListener("click", confirmDeleteAction);
 
-    readerLeft.addEventListener("click", () => {
+    readerLeft.addEventListener("click", (event) => {
+      event.stopPropagation();
       if (activeReaderPanel) {
         showMainReaderActions();
+        return;
+      }
+      if (readerActions.classList.contains("show")) {
+        hideReaderActions();
         return;
       }
       if (readerPage <= 1) {
@@ -4012,9 +4017,14 @@
       hideReaderActions();
       renderReaderPage();
     });
-    readerRight.addEventListener("click", () => {
+    readerRight.addEventListener("click", (event) => {
+      event.stopPropagation();
       if (activeReaderPanel) {
         showMainReaderActions();
+        return;
+      }
+      if (readerActions.classList.contains("show")) {
+        hideReaderActions();
         return;
       }
       if (readerPage >= readerTotalPages) {
@@ -4026,6 +4036,7 @@
       renderReaderPage();
     });
     readerMiddle.addEventListener("click", (event) => {
+      event.stopPropagation();
       if (activeReaderPanel) {
         showMainReaderActions();
         return;
