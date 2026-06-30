@@ -507,6 +507,7 @@
     .screen.hidden,
     .books-screen.hidden,
     .apps-screen.hidden,
+    .gallery-screen.hidden,
     .pomodoro-screen.hidden,
     .transfer-screen.hidden,
     .reader-screen.hidden {
@@ -1306,6 +1307,289 @@
         linear-gradient(135deg, transparent 0 34%, var(--ink) 35% 43%, transparent 44% 100%),
         linear-gradient(45deg, transparent 0 44%, var(--ink) 45% 54%, transparent 55% 100%);
       box-shadow: 24px -14px 0 -8px var(--ink);
+    }
+    .gallery-screen {
+      height: 100%;
+      display: grid;
+      grid-template-rows: 42px 122px 1fr 82px;
+      background: var(--white);
+      overflow: hidden;
+    }
+    .gallery-status {
+      padding: 0 18px 0 16px;
+      font-size: 17px;
+      font-weight: 650;
+    }
+    .gallery-status .system {
+      font-size: 15px;
+    }
+    .bluetooth {
+      width: 18px;
+      height: 22px;
+      position: relative;
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 700;
+    }
+    .bluetooth::before {
+      content: "Bluetooth";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 0;
+    }
+    .bluetooth::after {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 2px;
+      width: 8px;
+      height: 17px;
+      border-right: 3px solid var(--ink);
+      border-top: 3px solid var(--ink);
+      border-bottom: 3px solid var(--ink);
+      transform: skewY(-38deg);
+      box-shadow: -4px 7px 0 -2px var(--ink);
+    }
+    .gallery-head {
+      display: grid;
+      grid-template-columns: 1fr 66px;
+      align-items: center;
+      padding: 0 25px 18px 23px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .gallery-title {
+      margin: 0;
+      align-self: end;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 46px;
+      line-height: 1;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+    .home-icon-button {
+      width: 48px;
+      height: 48px;
+      border: 0;
+      background: transparent;
+      justify-self: end;
+      align-self: end;
+      position: relative;
+      color: var(--ink);
+    }
+    .home-icon-button::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 13px;
+      width: 30px;
+      height: 30px;
+      border: 4px solid var(--ink);
+      border-top: 0;
+      border-radius: 3px;
+    }
+    .home-icon-button::after {
+      content: "";
+      position: absolute;
+      left: 11px;
+      top: 5px;
+      width: 27px;
+      height: 27px;
+      border-left: 4px solid var(--ink);
+      border-top: 4px solid var(--ink);
+      transform: rotate(45deg);
+      background: var(--white);
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      overflow: hidden;
+      border-bottom: 2px solid var(--ink);
+    }
+    .gallery-tile {
+      position: relative;
+      overflow: hidden;
+      border-right: 1px solid var(--gray-3);
+      border-bottom: 1px solid var(--gray-3);
+      background: var(--white);
+      filter: grayscale(1) contrast(1.25);
+    }
+    .gallery-tile:nth-child(2n) {
+      border-right: 0;
+    }
+    .gallery-tile:nth-child(n + 5) {
+      border-bottom: 0;
+    }
+    .gallery-tile::before,
+    .gallery-tile::after {
+      content: "";
+      position: absolute;
+    }
+    .gallery-tile.flower::before {
+      left: -70px;
+      top: -58px;
+      width: 240px;
+      height: 240px;
+      background: repeating-conic-gradient(from 5deg, var(--ink) 0 9deg, transparent 9deg 18deg);
+      border-radius: 50%;
+    }
+    .gallery-tile.flower::after {
+      left: -36px;
+      top: -25px;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: var(--white);
+      box-shadow: 66px 35px 0 18px var(--ink), 105px 80px 0 34px var(--ink), 70px 120px 0 26px var(--ink);
+    }
+    .gallery-tile.falling {
+      background: var(--ink);
+    }
+    .gallery-tile.falling::before {
+      left: -8px;
+      top: 5px;
+      width: 232px;
+      height: 160px;
+      background:
+        radial-gradient(circle at 25px 18px, var(--white) 0 7px, transparent 8px),
+        radial-gradient(circle at 84px 54px, var(--white) 0 8px, transparent 9px),
+        radial-gradient(circle at 152px 35px, var(--white) 0 7px, transparent 8px),
+        radial-gradient(circle at 205px 84px, var(--white) 0 8px, transparent 9px);
+    }
+    .gallery-tile.falling::after {
+      inset: 0;
+      background:
+        linear-gradient(28deg, transparent 0 44%, var(--white) 45% 52%, transparent 53% 100%) 22px 18px / 72px 44px,
+        linear-gradient(-32deg, transparent 0 44%, var(--white) 45% 52%, transparent 53% 100%) 120px 24px / 82px 50px,
+        linear-gradient(18deg, transparent 0 43%, var(--white) 44% 54%, transparent 55% 100%) 26px 95px / 92px 52px,
+        linear-gradient(-22deg, transparent 0 43%, var(--white) 44% 54%, transparent 55% 100%) 126px 101px / 94px 58px;
+      background-repeat: no-repeat;
+    }
+    .gallery-tile.tower {
+      background: var(--ink);
+    }
+    .gallery-tile.tower::before {
+      left: 50px;
+      bottom: -12px;
+      width: 116px;
+      height: 120px;
+      background:
+        radial-gradient(ellipse at center, transparent 0 11px, var(--white) 12px 14px, transparent 15px) 12px 13px / 38px 28px,
+        radial-gradient(ellipse at center, transparent 0 11px, var(--white) 12px 14px, transparent 15px) 66px 14px / 38px 28px,
+        radial-gradient(ellipse at center, transparent 0 9px, var(--white) 10px 13px, transparent 14px) 32px 62px / 32px 26px,
+        radial-gradient(ellipse at center, transparent 0 9px, var(--white) 10px 13px, transparent 14px) 74px 61px / 32px 26px,
+        var(--ink);
+      border: 4px solid var(--white);
+      border-radius: 50% 50% 18px 18px;
+      box-shadow: 0 -48px 0 -9px var(--ink), 0 -48px 0 -5px var(--white), 0 -90px 0 -22px var(--ink), 0 -90px 0 -18px var(--white);
+    }
+    .gallery-tile.tower::after {
+      left: 74px;
+      top: 28px;
+      width: 64px;
+      height: 18px;
+      background: radial-gradient(ellipse at center, var(--white) 0 4px, transparent 5px);
+      background-size: 22px 18px;
+    }
+    .gallery-tile.faces::before {
+      inset: -8px;
+      background:
+        radial-gradient(circle at 22px 22px, transparent 0 19px, var(--ink) 20px 22px, transparent 23px),
+        radial-gradient(circle at 92px 25px, transparent 0 22px, var(--ink) 23px 25px, transparent 26px),
+        radial-gradient(circle at 165px 34px, transparent 0 24px, var(--ink) 25px 27px, transparent 28px),
+        radial-gradient(circle at 45px 92px, transparent 0 29px, var(--ink) 30px 33px, transparent 34px),
+        radial-gradient(circle at 123px 98px, transparent 0 28px, var(--ink) 29px 31px, transparent 32px),
+        radial-gradient(circle at 199px 104px, transparent 0 31px, var(--ink) 32px 35px, transparent 36px);
+    }
+    .gallery-tile.faces::after {
+      inset: 0;
+      background:
+        radial-gradient(circle at 41px 57px, var(--ink) 0 4px, transparent 5px),
+        radial-gradient(circle at 67px 56px, var(--ink) 0 4px, transparent 5px),
+        radial-gradient(circle at 112px 70px, var(--ink) 0 4px, transparent 5px),
+        radial-gradient(circle at 139px 69px, var(--ink) 0 4px, transparent 5px),
+        radial-gradient(circle at 174px 90px, var(--ink) 0 4px, transparent 5px),
+        radial-gradient(circle at 204px 89px, var(--ink) 0 4px, transparent 5px);
+    }
+    .gallery-tile.reporter::before {
+      left: 74px;
+      top: 48px;
+      width: 58px;
+      height: 64px;
+      border: 5px solid var(--ink);
+      border-radius: 48% 48% 42% 42%;
+      background:
+        radial-gradient(circle at 18px 23px, var(--ink) 0 4px, transparent 5px),
+        radial-gradient(circle at 40px 23px, var(--ink) 0 4px, transparent 5px);
+    }
+    .gallery-tile.reporter::after {
+      left: 18px;
+      top: 86px;
+      width: 190px;
+      height: 64px;
+      background:
+        linear-gradient(18deg, transparent 0 44%, var(--ink) 45% 53%, transparent 54% 100%) 0 14px / 78px 24px,
+        linear-gradient(-18deg, transparent 0 44%, var(--ink) 45% 53%, transparent 54% 100%) 118px 14px / 78px 24px,
+        radial-gradient(circle at 22px 22px, var(--ink) 0 12px, transparent 13px),
+        radial-gradient(circle at 170px 22px, var(--ink) 0 12px, transparent 13px),
+        radial-gradient(circle at 58px 16px, var(--ink) 0 10px, transparent 11px),
+        radial-gradient(circle at 134px 16px, var(--ink) 0 10px, transparent 11px);
+      background-repeat: no-repeat;
+    }
+    .gallery-tile.group::before {
+      inset: 5px 8px 0;
+      background:
+        radial-gradient(circle at 30px 36px, transparent 0 21px, var(--ink) 22px 25px, transparent 26px),
+        radial-gradient(circle at 84px 25px, transparent 0 24px, var(--ink) 25px 28px, transparent 29px),
+        radial-gradient(circle at 142px 38px, transparent 0 23px, var(--ink) 24px 27px, transparent 28px),
+        radial-gradient(circle at 194px 34px, transparent 0 21px, var(--ink) 22px 25px, transparent 26px),
+        linear-gradient(60deg, transparent 0 45%, var(--ink) 46% 52%, transparent 53% 100%) 8px 76px / 56px 44px,
+        linear-gradient(-60deg, transparent 0 45%, var(--ink) 46% 52%, transparent 53% 100%) 150px 76px / 56px 44px;
+      background-repeat: no-repeat;
+    }
+    .gallery-tile.group::after {
+      left: 34px;
+      top: 94px;
+      width: 156px;
+      height: 42px;
+      border-top: 5px solid var(--ink);
+      border-radius: 50%;
+      box-shadow: 0 -26px 0 -18px var(--ink), 55px -34px 0 -17px var(--ink), 106px -28px 0 -18px var(--ink);
+    }
+    .gallery-pager {
+      display: grid;
+      grid-template-columns: 96px 1fr 96px;
+      align-items: center;
+      padding: 14px 16px;
+      background: var(--white);
+    }
+    .gallery-pager .pager-button {
+      width: 38px;
+      height: 38px;
+      border-width: 2px;
+      border-radius: 0;
+      background: var(--white);
+    }
+    .gallery-pager .pager-button.prev { justify-self: start; }
+    .gallery-pager .pager-button.next { justify-self: end; }
+    .gallery-page-count {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 26px;
+      color: var(--gray-2);
+      line-height: 1;
+    }
+    .gallery-page-count::after {
+      content: "⌃⌄";
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 21px;
+      color: var(--gray-2);
+      transform: translateY(-1px);
     }
     .pomodoro-screen {
       height: 100%;
@@ -2188,6 +2472,29 @@
         <button type="button" class="app-card" data-app="gallery"><span class="app-icon gallery"></span><span>Gallery</span></button>
       </div>
     </section>
+    <section class="gallery-screen hidden" id="galleryScreen" aria-label="Gallery">
+      <header class="status gallery-status" aria-label="Status bar">
+        <div>10:30</div>
+        <div class="system">
+          <div class="wifi" aria-label="Wi-Fi connected"><span></span></div>
+          <div class="bluetooth" aria-label="Bluetooth connected"></div>
+        </div>
+        <div class="system">
+          <div>100%</div>
+          <div class="battery" aria-label="Battery 100%"><span></span></div>
+        </div>
+      </header>
+      <div class="gallery-head">
+        <h1 class="gallery-title">Gallery</h1>
+        <button type="button" class="home-icon-button" id="galleryHome" aria-label="Home"></button>
+      </div>
+      <div class="gallery-grid" id="galleryGrid" aria-label="Gallery images"></div>
+      <footer class="gallery-pager">
+        <button type="button" class="pager-button prev" id="prevGalleryPage" aria-label="Previous gallery page"></button>
+        <div class="gallery-page-count" id="galleryPageCount"></div>
+        <button type="button" class="pager-button next" id="nextGalleryPage" aria-label="Next gallery page"></button>
+      </footer>
+    </section>
     <section class="pomodoro-screen hidden" id="pomodoroScreen" aria-label="Pomodoro">
       <header class="status" aria-label="Status bar">
         <div>9:41</div>
@@ -2532,10 +2839,15 @@
       upper: ["!","@","#","$","%","^","&","*","(",")","Q","W","E","R","T","Y","U","I","O","P","A","S","D","F","G","H","J","K","L","Shift","?123","Z","X","C","V","B","N","M",".","Del"],
       symbol: ["~","`","|","\\","/","?","<",">","[","]","{","}","+","=",":",";","'","\"","_",".",",","-","@","#","$","%","&","*","!","?","ABC","1","2","3","4","5","6","7","8","Del"]
     };
+    const galleryTileTypes = ["flower", "falling", "tower", "faces", "reporter", "group"];
+    let galleryPage = 1;
+    const galleryTotalPages = 8;
+
 
     const homeScreen = document.getElementById("homeScreen");
     const booksScreen = document.getElementById("booksScreen");
     const appsScreen = document.getElementById("appsScreen");
+    const galleryScreen = document.getElementById("galleryScreen");
     const pomodoroScreen = document.getElementById("pomodoroScreen");
     const transferScreen = document.getElementById("transferScreen");
     const transferStatePanel = document.getElementById("transferStatePanel");
@@ -2558,6 +2870,11 @@
     const booksGrid = document.getElementById("booksGrid");
     const backHome = document.getElementById("backHome");
     const backFromApps = document.getElementById("backFromApps");
+    const galleryHome = document.getElementById("galleryHome");
+    const galleryGrid = document.getElementById("galleryGrid");
+    const prevGalleryPage = document.getElementById("prevGalleryPage");
+    const nextGalleryPage = document.getElementById("nextGalleryPage");
+    const galleryPageCount = document.getElementById("galleryPageCount");
     const backFromPomodoro = document.getElementById("backFromPomodoro");
     const backFromTransfer = document.getElementById("backFromTransfer");
     const pomodoroTime = document.getElementById("pomodoroTime");
@@ -2919,6 +3236,7 @@
       homeScreen.classList.add("hidden");
       booksScreen.classList.add("hidden");
       appsScreen.classList.add("hidden");
+      galleryScreen.classList.add("hidden");
       pomodoroScreen.classList.add("hidden");
       transferScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
@@ -3239,6 +3557,7 @@
       renderShelf();
       homeScreen.classList.add("hidden");
       appsScreen.classList.add("hidden");
+      galleryScreen.classList.add("hidden");
       pomodoroScreen.classList.add("hidden");
       transferScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
@@ -3249,6 +3568,7 @@
     function showAppsScreen() {
       homeScreen.classList.add("hidden");
       booksScreen.classList.add("hidden");
+      galleryScreen.classList.add("hidden");
       pomodoroScreen.classList.add("hidden");
       transferScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
@@ -3256,10 +3576,29 @@
       appsScreen.classList.remove("hidden");
     }
 
+    function renderGallery() {
+      galleryPage = clamp(galleryPage, 1, galleryTotalPages);
+      galleryGrid.innerHTML = galleryTileTypes.map((type, index) => `<button type="button" class="gallery-tile ${type}" aria-label="Image ${((galleryPage - 1) * 6) + index + 1}"></button>`).join("");
+      galleryPageCount.textContent = `${galleryPage}/${galleryTotalPages}`;
+    }
+
+    function showGalleryScreen() {
+      homeScreen.classList.add("hidden");
+      booksScreen.classList.add("hidden");
+      appsScreen.classList.add("hidden");
+      pomodoroScreen.classList.add("hidden");
+      transferScreen.classList.add("hidden");
+      wifiScreen.classList.add("hidden");
+      readerScreen.classList.add("hidden");
+      galleryScreen.classList.remove("hidden");
+      renderGallery();
+    }
+
     function showPomodoroScreen() {
       homeScreen.classList.add("hidden");
       booksScreen.classList.add("hidden");
       appsScreen.classList.add("hidden");
+      galleryScreen.classList.add("hidden");
       transferScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
       readerScreen.classList.add("hidden");
@@ -3270,6 +3609,7 @@
     function showHomeScreen() {
       booksScreen.classList.add("hidden");
       appsScreen.classList.add("hidden");
+      galleryScreen.classList.add("hidden");
       pomodoroScreen.classList.add("hidden");
       transferScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
@@ -3283,6 +3623,7 @@
       homeScreen.classList.add("hidden");
       booksScreen.classList.add("hidden");
       appsScreen.classList.add("hidden");
+      galleryScreen.classList.add("hidden");
       pomodoroScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
       readerScreen.classList.add("hidden");
@@ -3793,6 +4134,17 @@
 
     backHome.addEventListener("click", showHomeScreen);
     backFromApps.addEventListener("click", showHomeScreen);
+    galleryHome.addEventListener("click", showHomeScreen);
+    prevGalleryPage.addEventListener("click", () => {
+      if (galleryPage <= 1) return;
+      galleryPage -= 1;
+      renderGallery();
+    });
+    nextGalleryPage.addEventListener("click", () => {
+      if (galleryPage >= galleryTotalPages) return;
+      galleryPage += 1;
+      renderGallery();
+    });
     backFromPomodoro.addEventListener("click", showAppsScreen);
     backFromTransfer.addEventListener("click", showHomeScreen);
     pomodoroStart.addEventListener("click", togglePomodoro);
@@ -4275,6 +4627,10 @@
       button.addEventListener("click", () => {
         if (button.dataset.app === "pomodoro") {
           showPomodoroScreen();
+          return;
+        }
+        if (button.dataset.app === "gallery") {
+          showGalleryScreen();
           return;
         }
         showToast(`${button.textContent.trim()} opened`);
