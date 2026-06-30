@@ -4030,6 +4030,10 @@
         showMainReaderActions();
         return;
       }
+      if (readerActions.classList.contains("show")) {
+        hideReaderActions();
+        return;
+      }
       positionReaderActions(event.clientX - readerScreen.getBoundingClientRect().left, event.clientY - readerScreen.getBoundingClientRect().top);
     });
     readerClose.addEventListener("click", () => {
@@ -4226,9 +4230,14 @@
       pageInput.textContent = pageInputValue || " ";
     });
     readerScreen.addEventListener("click", (event) => {
-      if (!activeReaderPanel) return;
       if (event.target.closest(".reader-panel") || event.target.closest(".reader-action") || event.target.closest(".reader-progress") || event.target.closest(".auto-read-pill")) return;
-      showMainReaderActions();
+      if (activeReaderPanel) {
+        showMainReaderActions();
+        return;
+      }
+      if (readerActions.classList.contains("show")) {
+        hideReaderActions();
+      }
     });
 
     document.querySelectorAll("[data-action]").forEach((button) => {
