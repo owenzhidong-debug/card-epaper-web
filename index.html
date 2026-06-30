@@ -1323,35 +1323,6 @@
     .gallery-status .system {
       font-size: 15px;
     }
-    .bluetooth {
-      width: 18px;
-      height: 22px;
-      position: relative;
-      font-size: 22px;
-      line-height: 1;
-      font-weight: 700;
-    }
-    .bluetooth::before {
-      content: "Bluetooth";
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      font-size: 0;
-    }
-    .bluetooth::after {
-      content: "";
-      position: absolute;
-      left: 6px;
-      top: 2px;
-      width: 8px;
-      height: 17px;
-      border-right: 3px solid var(--ink);
-      border-top: 3px solid var(--ink);
-      border-bottom: 3px solid var(--ink);
-      transform: skewY(-38deg);
-      box-shadow: -4px 7px 0 -2px var(--ink);
-    }
     .gallery-head {
       display: grid;
       grid-template-columns: 1fr 66px;
@@ -1559,37 +1530,12 @@
       box-shadow: 0 -26px 0 -18px var(--ink), 55px -34px 0 -17px var(--ink), 106px -28px 0 -18px var(--ink);
     }
     .gallery-pager {
+      border-top: 4px solid var(--ink);
       display: grid;
-      grid-template-columns: 96px 1fr 96px;
+      grid-template-columns: 1fr 1fr 1fr;
       align-items: center;
-      padding: 14px 16px;
-      background: var(--white);
-    }
-    .gallery-pager .pager-button {
-      width: 38px;
-      height: 38px;
-      border-width: 2px;
-      border-radius: 0;
-      background: var(--white);
-    }
-    .gallery-pager .pager-button.prev { justify-self: start; }
-    .gallery-pager .pager-button.next { justify-self: end; }
-    .gallery-page-count {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 26px;
-      color: var(--gray-2);
-      line-height: 1;
-    }
-    .gallery-page-count::after {
-      content: "⌃⌄";
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 21px;
-      color: var(--gray-2);
-      transform: translateY(-1px);
+      padding: 15px 28px 13px;
+      background: var(--paper);
     }
     .pomodoro-screen {
       height: 100%;
@@ -2476,10 +2422,6 @@
       <header class="status gallery-status" aria-label="Status bar">
         <div>10:30</div>
         <div class="system">
-          <div class="wifi" aria-label="Wi-Fi connected"><span></span></div>
-          <div class="bluetooth" aria-label="Bluetooth connected"></div>
-        </div>
-        <div class="system">
           <div>100%</div>
           <div class="battery" aria-label="Battery 100%"><span></span></div>
         </div>
@@ -2491,7 +2433,7 @@
       <div class="gallery-grid" id="galleryGrid" aria-label="Gallery images"></div>
       <footer class="gallery-pager">
         <button type="button" class="pager-button prev" id="prevGalleryPage" aria-label="Previous gallery page"></button>
-        <div class="gallery-page-count" id="galleryPageCount"></div>
+        <div class="page-count" id="galleryPageCount"></div>
         <button type="button" class="pager-button next" id="nextGalleryPage" aria-label="Next gallery page"></button>
       </footer>
     </section>
