@@ -3620,7 +3620,8 @@
       galleryPreview.classList.remove("hidden");
     }
 
-    function startGalleryLongPress() {
+    function startGalleryLongPress(image) {
+      if (image) selectedGalleryImage = image;
       clearTimeout(galleryLongPressTimer);
       galleryLongPressOpen = false;
       galleryLongPressTimer = setTimeout(() => {
@@ -4192,8 +4193,23 @@
     galleryGrid.addEventListener("click", (event) => {
       const tile = event.target.closest("[data-gallery-id]");
       if (!tile) return;
+      if (galleryLongPressOpen) return;
       openGalleryPreview(tile.dataset.galleryId, tile.dataset.galleryType);
     });
+    galleryGrid.addEventListener("mousedown", (event) => {
+      const tile = event.target.closest("[data-gallery-id]");
+      if (!tile) return;
+      startGalleryLongPress({ id: tile.dataset.galleryId, type: tile.dataset.galleryType });
+    });
+    galleryGrid.addEventListener("touchstart", (event) => {
+      const tile = event.target.closest("[data-gallery-id]");
+      if (!tile) return;
+      startGalleryLongPress({ id: tile.dataset.galleryId, type: tile.dataset.galleryType });
+    }, { passive: true });
+    galleryGrid.addEventListener("mouseup", cancelGalleryLongPress);
+    galleryGrid.addEventListener("mouseleave", cancelGalleryLongPress);
+    galleryGrid.addEventListener("touchend", cancelGalleryLongPress);
+    galleryGrid.addEventListener("touchmove", cancelGalleryLongPress, { passive: true });
     galleryPreviewBack.addEventListener("click", closeGalleryPreview);
     galleryPreviewArt.addEventListener("mousedown", startGalleryLongPress);
     galleryPreviewArt.addEventListener("touchstart", startGalleryLongPress, { passive: true });
