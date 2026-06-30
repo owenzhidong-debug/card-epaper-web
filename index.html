@@ -1550,9 +1550,18 @@
       display: none;
     }
     .gallery-preview-top {
-      display: flex;
+      display: grid;
+      grid-template-columns: 64px 1fr;
       align-items: center;
       padding: 16px 22px;
+    }
+    .gallery-preview-meta {
+      justify-self: center;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 700;
+      color: var(--gray-2);
+      font-variant-numeric: tabular-nums;
     }
     .gallery-preview-back {
       transform: scale(.82);
@@ -1586,6 +1595,10 @@
     .gallery-preview-art .gallery-tile.tower { transform: scale(2.12); }
     .gallery-preview-art .gallery-tile.reporter { transform: scale(2.2); }
     .gallery-preview-art .gallery-tile.group { transform: scale(2.05); }
+    .gallery-action-sheet .action-sheet button {
+      height: 58px;
+      font-size: 22px;
+    }
     .pomodoro-screen {
       height: 100%;
       display: grid;
@@ -2488,15 +2501,21 @@
       <div class="gallery-preview hidden" id="galleryPreview" aria-label="Image preview">
         <div class="gallery-preview-top">
           <button type="button" class="back-button gallery-preview-back" id="galleryPreviewBack" aria-label="Back to gallery"></button>
+          <div class="gallery-preview-meta" id="galleryPreviewMeta"></div>
         </div>
         <div class="gallery-preview-stage">
           <div class="gallery-preview-art" id="galleryPreviewArt"></div>
         </div>
       </div>
     </section>
-    <div class="action-sheet-backdrop" id="galleryActionSheet">
+    <div class="action-sheet-backdrop gallery-action-sheet" id="galleryActionSheet">
       <div class="action-sheet">
         <button type="button" id="setGalleryWallpaper">Set as Wallpaper</button>
+        <button type="button" id="fitGalleryImage">Fit to Screen</button>
+        <button type="button" id="rotateGalleryImage">Rotate</button>
+        <button type="button" id="invertGalleryImage">Invert Colors</button>
+        <button type="button" id="refreshGalleryImage">Refresh Display</button>
+        <button type="button" id="infoGalleryImage">Image Info</button>
         <button type="button" id="deleteGalleryImage">Delete</button>
         <button type="button" id="cancelGalleryAction">Cancel</button>
       </div>
@@ -2851,6 +2870,7 @@
     let galleryLongPressTimer = null;
     let galleryLongPressOpen = false;
     const deletedGalleryImages = new Set();
+    const galleryImagePrefs = new Map();
     const galleryTotalPages = 8;
 
 
@@ -2884,9 +2904,15 @@
     const galleryGrid = document.getElementById("galleryGrid");
     const galleryPreview = document.getElementById("galleryPreview");
     const galleryPreviewBack = document.getElementById("galleryPreviewBack");
+    const galleryPreviewMeta = document.getElementById("galleryPreviewMeta");
     const galleryPreviewArt = document.getElementById("galleryPreviewArt");
     const galleryActionSheet = document.getElementById("galleryActionSheet");
     const setGalleryWallpaper = document.getElementById("setGalleryWallpaper");
+    const fitGalleryImage = document.getElementById("fitGalleryImage");
+    const rotateGalleryImage = document.getElementById("rotateGalleryImage");
+    const invertGalleryImage = document.getElementById("invertGalleryImage");
+    const refreshGalleryImage = document.getElementById("refreshGalleryImage");
+    const infoGalleryImage = document.getElementById("infoGalleryImage");
     const deleteGalleryImage = document.getElementById("deleteGalleryImage");
     const cancelGalleryAction = document.getElementById("cancelGalleryAction");
     const prevGalleryPage = document.getElementById("prevGalleryPage");
@@ -3614,9 +3640,33 @@
       selectedGalleryImage = null;
     }
 
+    function getGalleryImageState(id) {
+      if (!galleryImagePrefs.has(id)) galleryImagePrefs.set(id, { fit: "Fill", rotation: 0, inverted: false });
+      return galleryImagePrefs.get(id);
+    }
+
+    function galleryImageNumber(id) {
+      const parts = id.split("-").map(Number);
+      return ((parts[1] - 1) * 6) + parts[2] + 1;
+    }
+
+    function renderGalleryPreview() {
+      if (!selectedGalleryImage) return;
+      const state = getGalleryImageState(selectedGalleryImage.id);
+      const scaleMap = { flower: 2.25, falling: 2.05, tower: 2.12, faces: 1.85, reporter: 2.2, group: 2.05 };
+      const scale = state.fit === "Fit" ? 1.28 : (scaleMap[selectedGalleryImage.type] || 1.85);
+      galleryPreviewArt.innerHTML = `<div class="gallery-tile ${selectedGalleryImage.type}" aria-hidden="true"></div>`;
+      const tile = galleryPreviewArt.querySelector(".gallery-tile");
+      tile.style.transform = `rotate(${state.rotation}deg) scale(${scale})`;
+      tile.style.filter = state.inverted ? "invert(1) grayscale(1) contrast(1.2)" : "grayscale(1) contrast(1.25)";
+      galleryPreviewMeta.textContent = `${galleryImageNumber(selectedGalleryImage.id)} / ${galleryTotalPages * 6} · ${state.fit} · ${state.rotation}°`;
+      fitGalleryImage.textContent = state.fit === "Fill" ? "Fit to Screen" : "Fill Screen";
+      invertGalleryImage.textContent = state.inverted ? "Normal Colors" : "Invert Colors";
+    }
+
     function openGalleryPreview(id, type) {
       selectedGalleryImage = { id, type };
-      galleryPreviewArt.innerHTML = `<div class="gallery-tile ${type}" aria-hidden="true"></div>`;
+      renderGalleryPreview();
       galleryPreview.classList.remove("hidden");
     }
 
@@ -3626,6 +3676,7 @@
       galleryLongPressOpen = false;
       galleryLongPressTimer = setTimeout(() => {
         if (!selectedGalleryImage) return;
+        renderGalleryPreview();
         galleryLongPressOpen = true;
         galleryActionSheet.classList.add("show");
       }, 520);
@@ -3633,7 +3684,7 @@
 
     function cancelGalleryLongPress() {
       clearTimeout(galleryLongPressTimer);
-      setTimeout(() => { galleryLongPressOpen = false; }, 0);
+      setTimeout(() => { galleryLongPressOpen = false; }, galleryActionSheet.classList.contains("show") ? 260 : 0);
     }
 
     function showGalleryScreen() {
@@ -4220,6 +4271,39 @@
     setGalleryWallpaper.addEventListener("click", () => {
       galleryActionSheet.classList.remove("show");
       showToast("Wallpaper set");
+    });
+    fitGalleryImage.addEventListener("click", () => {
+      if (!selectedGalleryImage) return;
+      const state = getGalleryImageState(selectedGalleryImage.id);
+      state.fit = state.fit === "Fill" ? "Fit" : "Fill";
+      galleryActionSheet.classList.remove("show");
+      if (!galleryPreview.classList.contains("hidden")) renderGalleryPreview();
+      showToast(state.fit === "Fit" ? "Fit to screen" : "Fill screen");
+    });
+    rotateGalleryImage.addEventListener("click", () => {
+      if (!selectedGalleryImage) return;
+      const state = getGalleryImageState(selectedGalleryImage.id);
+      state.rotation = (state.rotation + 90) % 360;
+      galleryActionSheet.classList.remove("show");
+      if (!galleryPreview.classList.contains("hidden")) renderGalleryPreview();
+      showToast("Rotated");
+    });
+    invertGalleryImage.addEventListener("click", () => {
+      if (!selectedGalleryImage) return;
+      const state = getGalleryImageState(selectedGalleryImage.id);
+      state.inverted = !state.inverted;
+      galleryActionSheet.classList.remove("show");
+      if (!galleryPreview.classList.contains("hidden")) renderGalleryPreview();
+      showToast(state.inverted ? "Colors inverted" : "Normal colors");
+    });
+    refreshGalleryImage.addEventListener("click", () => {
+      galleryActionSheet.classList.remove("show");
+      showToast("Display refreshed");
+    });
+    infoGalleryImage.addEventListener("click", () => {
+      if (!selectedGalleryImage) return;
+      galleryActionSheet.classList.remove("show");
+      showToast(`Image ${galleryImageNumber(selectedGalleryImage.id)} · 480 x 800`);
     });
     deleteGalleryImage.addEventListener("click", () => {
       if (!selectedGalleryImage) return;
