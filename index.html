@@ -508,6 +508,8 @@
     .books-screen.hidden,
     .apps-screen.hidden,
     .gallery-screen.hidden,
+    .weather-screen.hidden,
+    .countdown-screen.hidden,
     .pomodoro-screen.hidden,
     .transfer-screen.hidden,
     .reader-screen.hidden {
@@ -1586,116 +1588,445 @@
     .gallery-preview-art .gallery-tile.tower { transform: scale(2.12); }
     .gallery-preview-art .gallery-tile.reporter { transform: scale(2.2); }
     .gallery-preview-art .gallery-tile.group { transform: scale(2.05); }
-    .pomodoro-screen {
+    .countdown-screen {
+      height: 100%;
+      display: grid;
+      grid-template-rows: 70px 1fr;
+      background: var(--paper);
+    }
+    .countdown-head {
+      display: grid;
+      grid-template-columns: 88px 1fr 88px;
+      align-items: center;
+      padding: 0 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .countdown-head .back-button {
+      transform: scale(.72);
+      transform-origin: left center;
+    }
+    .countdown-title {
+      margin: 0;
+      text-align: center;
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 680;
+    }
+    .countdown-body {
+      padding: 48px 24px 26px;
+    }
+    .countdown-toolbar {
+      display: grid;
+      grid-template-columns: 1fr 54px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .countdown-section-title {
+      font-size: 25px;
+      line-height: 1;
+      font-weight: 650;
+    }
+    .countdown-refresh {
+      width: 48px;
+      height: 48px;
+      border: 0;
+      background: transparent;
+      position: relative;
+      justify-self: end;
+    }
+    .countdown-refresh::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      width: 28px;
+      height: 28px;
+      border: 4px solid var(--ink);
+      border-right-color: transparent;
+      border-radius: 50%;
+      transform: rotate(-25deg);
+    }
+    .countdown-refresh::after {
+      content: "";
+      position: absolute;
+      right: 6px;
+      top: 8px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid var(--ink);
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      transform: rotate(-18deg);
+    }
+    .countdown-content.hidden {
+      display: none;
+    }
+    .countdown-wifi-state {
+      display: none;
+      padding-top: 2px;
+    }
+    .countdown-wifi-state.show {
+      display: block;
+    }
+    .countdown-list {
+      display: grid;
+      gap: 16px;
+    }
+    .countdown-item {
+      height: 86px;
+      border: 2px solid var(--ink);
+      border-radius: 9px;
+      display: grid;
+      grid-template-columns: 1fr 118px;
+      align-items: center;
+      padding: 0 18px;
+      background: transparent;
+    }
+    .countdown-name {
+      font-size: 27px;
+      line-height: 1;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .countdown-date {
+      color: var(--gray-2);
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 520;
+      font-variant-numeric: tabular-nums;
+    }
+    .countdown-days {
+      justify-self: end;
+      display: grid;
+      justify-items: end;
+      align-items: center;
+    }
+    .countdown-number {
+      font-size: 56px;
+      line-height: .86;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+    .countdown-unit {
+      margin-top: 12px;
+      color: var(--gray-2);
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 520;
+    }
+    .weather-screen {
       height: 100%;
       display: grid;
       grid-template-rows: 42px 56px 1fr;
       background: var(--paper);
     }
-    .pomodoro-head {
+    .weather-head {
       display: grid;
       grid-template-columns: 96px 1fr 96px;
       align-items: center;
       padding: 0 28px;
       border-bottom: 2px solid var(--ink);
     }
-    .pomodoro-title {
+    .weather-title {
       margin: 0;
       text-align: center;
       font-size: 36px;
       line-height: 1;
       font-weight: 620;
     }
-    .pomodoro-body {
-      display: grid;
-      grid-template-rows: 306px 74px 72px 1fr;
-      padding: 36px 28px 26px;
-      align-items: center;
-      justify-items: center;
-      text-align: center;
+    .weather-body {
+      padding: 28px 26px 24px;
     }
-    .pomodoro-dial {
-      width: 250px;
-      height: 250px;
-      border: 5px solid var(--ink);
-      border-radius: 50%;
+    .weather-content {
       display: grid;
-      place-items: center;
-      position: relative;
+      grid-template-rows: 268px 96px 1fr;
+      gap: 18px;
+    }
+    .weather-content.hidden {
+      display: none;
+    }
+    .weather-wifi-state {
+      display: none;
+      padding-top: 4px;
+    }
+    .weather-wifi-state.show {
+      display: block;
+    }
+    .weather-current {
+      border: 3px solid var(--ink);
       background: var(--white);
+      display: grid;
+      grid-template-columns: 168px 1fr;
+      align-items: center;
+      padding: 22px;
     }
-    .pomodoro-dial::before {
+    .weather-mark {
+      width: 132px;
+      height: 132px;
+      justify-self: center;
+      position: relative;
+    }
+    .weather-mark::before {
       content: "";
       position: absolute;
-      inset: 19px;
-      border: 2px solid var(--gray-3);
+      left: 12px;
+      top: 10px;
+      width: 78px;
+      height: 78px;
+      border: 8px solid var(--ink);
       border-radius: 50%;
+      background: var(--white);
     }
-    .pomodoro-time {
-      font-size: 58px;
-      line-height: 1;
-      font-weight: 760;
-      font-variant-numeric: tabular-nums;
-      z-index: 1;
+    .weather-mark::after {
+      content: "";
+      position: absolute;
+      left: 38px;
+      top: 72px;
+      width: 78px;
+      height: 38px;
+      border: 8px solid var(--ink);
+      border-radius: 44px 44px 18px 18px;
+      background: var(--white);
+      box-shadow: -28px 12px 0 -8px var(--white), -28px 12px 0 0 var(--ink);
     }
-    .pomodoro-tabs {
-      width: 100%;
+    .weather-temp {
+      font-size: 78px;
+      line-height: .92;
+      font-weight: 780;
+      letter-spacing: 0;
+    }
+    .weather-condition {
+      margin-top: 14px;
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 720;
+    }
+    .weather-location {
+      margin-top: 8px;
+      color: var(--gray-2);
+      font-size: 17px;
+      line-height: 1.2;
+      font-weight: 650;
+    }
+    .weather-stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .weather-stat {
       border: 2px solid var(--ink);
-      border-radius: 7px;
-      overflow: hidden;
-    }
-    .pomodoro-tab {
-      height: 46px;
-      border: 0;
-      border-right: 2px solid var(--ink);
       background: var(--white);
-      color: var(--ink);
-      font-size: 16px;
-      font-weight: 730;
-      font-family: inherit;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 6px;
+      min-width: 0;
     }
-    .pomodoro-tab:last-child {
-      border-right: 0;
+    .weather-stat strong {
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 780;
+      font-variant-numeric: tabular-nums;
     }
-    .pomodoro-tab.active {
+    .weather-stat span {
+      font-size: 14px;
+      line-height: 1;
+      color: var(--gray-2);
+      font-weight: 700;
+    }
+    .weather-forecast {
+      border: 3px solid var(--ink);
+      background: var(--white);
+      padding: 16px 18px;
+      display: grid;
+      grid-template-rows: 30px repeat(4, 1fr);
+    }
+    .weather-section-title {
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 780;
+    }
+    .forecast-row {
+      display: grid;
+      grid-template-columns: 76px 1fr 74px;
+      align-items: center;
+      border-top: 2px solid var(--gray-3);
+      font-size: 19px;
+      line-height: 1;
+      font-weight: 700;
+    }
+    .forecast-row span:nth-child(2) {
+      color: var(--gray-2);
+      font-size: 17px;
+      font-weight: 650;
+    }
+    .forecast-row strong {
+      justify-self: end;
+      font-size: 20px;
+      font-weight: 780;
+      font-variant-numeric: tabular-nums;
+    }
+    .pomodoro-screen {
+      height: 100%;
+      display: grid;
+      grid-template-rows: 70px 1fr;
+      background: var(--paper);
+    }
+    .pomodoro-head {
+      display: grid;
+      grid-template-columns: 88px 1fr 88px;
+      align-items: center;
+      padding: 0 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .pomodoro-head .back-button {
+      transform: scale(.72);
+      transform-origin: left center;
+    }
+    .pomodoro-title {
+      margin: 0;
+      text-align: center;
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 720;
+    }
+    .pomodoro-body {
+      position: relative;
+      padding: 26px 24px 22px;
+    }
+    .pomodoro-view.hidden {
+      display: none;
+    }
+    .pomodoro-idle {
+      display: grid;
+      align-content: start;
+      gap: 22px;
+    }
+    .pomodoro-card {
+      border: 3px solid var(--ink);
+      border-radius: 10px;
+      background: transparent;
+    }
+    .pomodoro-idle-card {
+      min-height: 354px;
+      padding: 30px 26px 24px;
+      text-align: center;
+    }
+    .pomodoro-label {
+      color: var(--gray-2);
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 700;
+    }
+    .pomodoro-time {
+      margin-top: 20px;
+      font-size: 74px;
+      line-height: 1;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0;
+    }
+    .pomodoro-start-wide {
+      width: 100%;
+      height: 62px;
+      margin-top: 20px;
+      border: 0;
+      border-radius: 7px;
       background: var(--ink);
       color: var(--white);
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 700;
+      font-family: inherit;
+    }
+    .pomodoro-divider {
+      height: 2px;
+      margin: 20px 8px 18px;
+      background: var(--ink);
+    }
+    .pomodoro-done-label {
+      color: var(--gray-2);
+      font-size: 17px;
+      line-height: 1;
+      font-weight: 700;
+    }
+    .pomodoro-done {
+      margin-top: 14px;
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 720;
+    }
+    .pomodoro-settings-title {
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 720;
+    }
+    .pomodoro-setting-list {
+      display: grid;
+      gap: 14px;
+    }
+    .pomodoro-setting-row {
+      height: 78px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      display: grid;
+      grid-template-columns: 1fr 48px 82px 48px;
+      align-items: center;
+      padding: 0 14px 0 16px;
+      font-size: 22px;
+      font-weight: 650;
+    }
+    .pomodoro-step {
+      width: 38px;
+      height: 38px;
+      border: 2px solid var(--ink);
+      border-radius: 6px;
+      background: transparent;
+      font-size: 23px;
+      line-height: 1;
+      font-weight: 800;
+      font-family: inherit;
+    }
+    .pomodoro-duration-value {
+      justify-self: center;
+      font-size: 23px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .pomodoro-running {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding-bottom: 38px;
+    }
+    .pomodoro-running-card {
+      width: 100%;
+      min-height: 390px;
+      padding: 58px 28px 54px;
+      text-align: center;
+    }
+    .pomodoro-running .pomodoro-time {
+      margin-top: 28px;
+      font-size: 100px;
+      font-weight: 500;
+    }
+    .pomodoro-running .pomodoro-divider {
+      margin: 34px 8px 28px;
     }
     .pomodoro-controls {
-      width: 100%;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
     .pomodoro-control {
-      height: 50px;
+      height: 62px;
       border: 3px solid var(--ink);
       border-radius: 7px;
-      background: var(--white);
+      background: transparent;
       color: var(--ink);
-      font-size: 20px;
-      font-weight: 760;
+      font-size: 22px;
+      font-weight: 720;
       font-family: inherit;
-    }
-    .pomodoro-control.primary {
-      background: var(--ink);
-      color: var(--white);
-    }
-    .pomodoro-stats {
-      align-self: start;
-      width: 220px;
-      border-top: 2px solid var(--ink);
-      padding-top: 18px;
-      font-size: 17px;
-      font-weight: 700;
-    }
-    .pomodoro-stats span {
-      border: 2px solid var(--ink);
-      border-radius: 6px;
-      padding: 11px 8px;
-      background: var(--white);
     }
     .shelf-cover {
       width: 124px;
@@ -2502,6 +2833,85 @@
       </div>
     </div>
     <section class="pomodoro-screen hidden" id="pomodoroScreen" aria-label="Pomodoro">
+      <div class="pomodoro-head">
+        <button type="button" class="back-button" id="backFromPomodoro" aria-label="Back"></button>
+        <h1 class="pomodoro-title">番茄钟</h1>
+        <div></div>
+      </div>
+      <div class="pomodoro-body">
+        <section class="pomodoro-view pomodoro-idle" id="pomodoroIdleView">
+          <div class="pomodoro-card pomodoro-idle-card">
+            <div class="pomodoro-label">专注</div>
+            <div class="pomodoro-time" id="pomodoroIdleTime">25:00</div>
+            <button type="button" class="pomodoro-start-wide" id="pomodoroStart">开始</button>
+            <div class="pomodoro-divider"></div>
+            <div class="pomodoro-done-label">今日完成</div>
+            <div class="pomodoro-done" id="pomodoroSessions">0 个番茄钟</div>
+          </div>
+          <div class="pomodoro-settings-title">时间设置</div>
+          <div class="pomodoro-setting-list">
+            <div class="pomodoro-setting-row">
+              <span>专注时长</span>
+              <button type="button" class="pomodoro-step" data-pomodoro-step="focus" data-delta="-5">-</button>
+              <span class="pomodoro-duration-value" id="pomodoroFocusValue">25分</span>
+              <button type="button" class="pomodoro-step" data-pomodoro-step="focus" data-delta="5">+</button>
+            </div>
+            <div class="pomodoro-setting-row">
+              <span>休息时长</span>
+              <button type="button" class="pomodoro-step" data-pomodoro-step="rest" data-delta="-1">-</button>
+              <span class="pomodoro-duration-value" id="pomodoroRestValue">5分</span>
+              <button type="button" class="pomodoro-step" data-pomodoro-step="rest" data-delta="1">+</button>
+            </div>
+          </div>
+        </section>
+        <section class="pomodoro-view pomodoro-running hidden" id="pomodoroRunningView">
+          <div class="pomodoro-card pomodoro-running-card">
+            <div class="pomodoro-label" id="pomodoroModeLabel">专注时长</div>
+            <div class="pomodoro-time" id="pomodoroTime">25:00</div>
+            <div class="pomodoro-divider"></div>
+            <div class="pomodoro-controls">
+              <button type="button" class="pomodoro-control" id="pomodoroPause">暂停</button>
+              <button type="button" class="pomodoro-control" id="pomodoroReset">放弃</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+    <section class="countdown-screen hidden" id="countdownScreen" aria-label="Countdown">
+      <div class="countdown-head">
+        <button type="button" class="back-button" id="backFromCountdown" aria-label="Back"></button>
+        <h1 class="countdown-title">倒数日</h1>
+        <div></div>
+      </div>
+      <div class="countdown-body">
+        <div class="countdown-content" id="countdownContent">
+          <div class="countdown-toolbar">
+            <div class="countdown-section-title">全部倒数日</div>
+            <button type="button" class="countdown-refresh" id="countdownRefresh" aria-label="Refresh countdowns"></button>
+          </div>
+          <div class="countdown-list" aria-label="Countdown list">
+            <div class="countdown-item">
+              <div><div class="countdown-name">春节</div><div class="countdown-date">2027-02-06</div></div>
+              <div class="countdown-days"><div class="countdown-number">290</div><div class="countdown-unit">天</div></div>
+            </div>
+            <div class="countdown-item">
+              <div><div class="countdown-name">生日</div><div class="countdown-date">2026-06-15</div></div>
+              <div class="countdown-days"><div class="countdown-number">54</div><div class="countdown-unit">天</div></div>
+            </div>
+            <div class="countdown-item">
+              <div><div class="countdown-name">毕业典礼</div><div class="countdown-date">2026-07-01</div></div>
+              <div class="countdown-days"><div class="countdown-number">70</div><div class="countdown-unit">天</div></div>
+            </div>
+            <div class="countdown-item">
+              <div><div class="countdown-name">国庆节</div><div class="countdown-date">2026-10-01</div></div>
+              <div class="countdown-days"><div class="countdown-number">162</div><div class="countdown-unit">天</div></div>
+            </div>
+          </div>
+        </div>
+        <section class="countdown-wifi-state" id="countdownWifiState" aria-live="polite"></section>
+      </div>
+    </section>
+    <section class="weather-screen hidden" id="weatherScreen" aria-label="Weather">
       <header class="status" aria-label="Status bar">
         <div>9:41</div>
         <div class="system">
@@ -2510,25 +2920,35 @@
           <div class="battery" aria-label="Battery 99%"><span></span></div>
         </div>
       </header>
-      <div class="pomodoro-head">
-        <button type="button" class="back-button" id="backFromPomodoro" aria-label="Back"></button>
-        <h1 class="pomodoro-title">Pomodoro</h1>
+      <div class="weather-head">
+        <button type="button" class="back-button" id="backFromWeather" aria-label="Back"></button>
+        <h1 class="weather-title">Weather</h1>
         <div></div>
       </div>
-      <div class="pomodoro-body">
-        <div class="pomodoro-dial"><div class="pomodoro-time" id="pomodoroTime">25:00</div></div>
-        <div class="pomodoro-tabs">
-          <button type="button" class="pomodoro-tab active" data-pomodoro-mode="focus">Focus</button>
-          <button type="button" class="pomodoro-tab" data-pomodoro-mode="short">Short</button>
-          <button type="button" class="pomodoro-tab" data-pomodoro-mode="long">Long</button>
+      <div class="weather-body">
+        <div class="weather-content" id="weatherContent">
+          <section class="weather-current">
+            <div class="weather-mark" aria-hidden="true"></div>
+            <div>
+              <div class="weather-temp">24°</div>
+              <div class="weather-condition">Partly Cloudy</div>
+              <div class="weather-location">Shanghai · Updated 09:40</div>
+            </div>
+          </section>
+          <section class="weather-stats" aria-label="Weather details">
+            <div class="weather-stat"><strong>62%</strong><span>Humidity</span></div>
+            <div class="weather-stat"><strong>NE 3</strong><span>Wind</span></div>
+            <div class="weather-stat"><strong>Good</strong><span>Air</span></div>
+          </section>
+          <section class="weather-forecast" aria-label="Forecast">
+            <div class="weather-section-title">Forecast</div>
+            <div class="forecast-row"><span>Today</span><span>Cloudy</span><strong>18 / 25</strong></div>
+            <div class="forecast-row"><span>Tue</span><span>Light Rain</span><strong>17 / 22</strong></div>
+            <div class="forecast-row"><span>Wed</span><span>Sunny</span><strong>19 / 27</strong></div>
+            <div class="forecast-row"><span>Thu</span><span>Overcast</span><strong>20 / 26</strong></div>
+          </section>
         </div>
-        <div class="pomodoro-controls">
-          <button type="button" class="pomodoro-control primary" id="pomodoroStart">Start</button>
-          <button type="button" class="pomodoro-control" id="pomodoroReset">Reset</button>
-        </div>
-        <div class="pomodoro-stats">
-          <span id="pomodoroSessions">Focus 0</span>
-        </div>
+        <section class="weather-wifi-state" id="weatherWifiState" aria-live="polite"></section>
       </div>
     </section>
     <section class="transfer-screen hidden" id="transferScreen" aria-label="Transfer">
@@ -2859,6 +3279,10 @@
     const booksScreen = document.getElementById("booksScreen");
     const appsScreen = document.getElementById("appsScreen");
     const galleryScreen = document.getElementById("galleryScreen");
+    const weatherScreen = document.getElementById("weatherScreen");
+    const weatherContent = document.getElementById("weatherContent");
+    const weatherWifiState = document.getElementById("weatherWifiState");
+    const countdownScreen = document.getElementById("countdownScreen");
     const pomodoroScreen = document.getElementById("pomodoroScreen");
     const transferScreen = document.getElementById("transferScreen");
     const transferStatePanel = document.getElementById("transferStatePanel");
@@ -2894,12 +3318,23 @@
     const nextGalleryPage = document.getElementById("nextGalleryPage");
     const galleryPageCount = document.getElementById("galleryPageCount");
     const backFromPomodoro = document.getElementById("backFromPomodoro");
+    const backFromWeather = document.getElementById("backFromWeather");
+    const backFromCountdown = document.getElementById("backFromCountdown");
+    const countdownContent = document.getElementById("countdownContent");
+    const countdownWifiState = document.getElementById("countdownWifiState");
+    const countdownRefresh = document.getElementById("countdownRefresh");
     const backFromTransfer = document.getElementById("backFromTransfer");
+    const pomodoroIdleView = document.getElementById("pomodoroIdleView");
+    const pomodoroRunningView = document.getElementById("pomodoroRunningView");
+    const pomodoroIdleTime = document.getElementById("pomodoroIdleTime");
     const pomodoroTime = document.getElementById("pomodoroTime");
+    const pomodoroModeLabel = document.getElementById("pomodoroModeLabel");
     const pomodoroStart = document.getElementById("pomodoroStart");
+    const pomodoroPause = document.getElementById("pomodoroPause");
     const pomodoroReset = document.getElementById("pomodoroReset");
     const pomodoroSessions = document.getElementById("pomodoroSessions");
-    const pomodoroTabs = Array.from(document.querySelectorAll(".pomodoro-tab"));
+    const pomodoroFocusValue = document.getElementById("pomodoroFocusValue");
+    const pomodoroRestValue = document.getElementById("pomodoroRestValue");
     const phoneProgress = document.getElementById("phoneProgress");
     const phoneTransferPanel = document.getElementById("phoneTransferPanel");
     const phoneTransferList = document.getElementById("phoneTransferList");
@@ -3003,6 +3438,9 @@
     let transferStartTimer = null;
     let pomodoroTimer = null;
     let pomodoroMode = "focus";
+    let pomodoroView = "idle";
+    let pomodoroFocusMinutes = 25;
+    let pomodoroRestMinutes = 5;
     let pomodoroRemaining = 25 * 60;
     let pomodoroRunning = false;
     let pomodoroDone = 0;
@@ -3255,6 +3693,8 @@
       booksScreen.classList.add("hidden");
       appsScreen.classList.add("hidden");
       galleryScreen.classList.add("hidden");
+      weatherScreen.classList.add("hidden");
+      countdownScreen.classList.add("hidden");
       pomodoroScreen.classList.add("hidden");
       transferScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
@@ -3472,16 +3912,9 @@
       showReaderToast("Bookmark deleted");
     }
 
-    const pomodoroDurations = {
-      focus: 25 * 60,
-      short: 5 * 60,
-      long: 15 * 60
-    };
-    const pomodoroLabels = {
-      focus: "Focus",
-      short: "Short Break",
-      long: "Long Break"
-    };
+    function pomodoroDuration(mode = pomodoroMode) {
+      return (mode === "focus" ? pomodoroFocusMinutes : pomodoroRestMinutes) * 60;
+    }
 
     function formatPomodoroTime(seconds) {
       const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -3489,18 +3922,43 @@
       return `${minutes}:${rest}`;
     }
 
+    function runPomodoroTimer() {
+      clearInterval(pomodoroTimer);
+      if (!pomodoroRunning) return;
+      pomodoroTimer = setInterval(() => {
+        pomodoroRemaining = Math.max(0, pomodoroRemaining - 1);
+        renderPomodoro();
+        if (pomodoroRemaining === 0) completePomodoroRound();
+      }, 1000);
+    }
+
     function renderPomodoro() {
+      const idle = pomodoroView === "idle";
+      pomodoroIdleView.classList.toggle("hidden", !idle);
+      pomodoroRunningView.classList.toggle("hidden", idle);
+      pomodoroIdleTime.textContent = formatPomodoroTime(pomodoroFocusMinutes * 60);
       pomodoroTime.textContent = formatPomodoroTime(pomodoroRemaining);
-      pomodoroStart.textContent = pomodoroRunning ? "Pause" : "Start";
-      pomodoroSessions.textContent = `Focus ${pomodoroDone}`;
-      pomodoroTabs.forEach((tab) => {
-        tab.classList.toggle("active", tab.dataset.pomodoroMode === pomodoroMode);
-      });
+      pomodoroModeLabel.textContent = pomodoroMode === "focus" ? "专注时长" : "休息时长";
+      pomodoroPause.textContent = pomodoroRunning ? "暂停" : "继续";
+      pomodoroReset.textContent = pomodoroMode === "focus" ? "放弃" : "跳过";
+      pomodoroSessions.textContent = `${pomodoroDone} 个番茄钟`;
+      pomodoroFocusValue.textContent = `${pomodoroFocusMinutes}分`;
+      pomodoroRestValue.textContent = `${pomodoroRestMinutes}分`;
+    }
+
+    function startPomodoro(mode = "focus") {
+      pomodoroMode = mode;
+      pomodoroView = "running";
+      pomodoroRemaining = pomodoroDuration(mode);
+      pomodoroRunning = true;
+      renderPomodoro();
+      runPomodoroTimer();
     }
 
     function setPomodoroMode(mode) {
       pomodoroMode = mode;
-      pomodoroRemaining = pomodoroDurations[mode];
+      pomodoroView = "running";
+      pomodoroRemaining = pomodoroDuration(mode);
       pomodoroRunning = false;
       clearInterval(pomodoroTimer);
       renderPomodoro();
@@ -3508,33 +3966,51 @@
 
     function completePomodoroRound() {
       clearInterval(pomodoroTimer);
-      pomodoroRunning = false;
       if (pomodoroMode === "focus") {
         pomodoroDone += 1;
-        setPomodoroMode(pomodoroDone % 4 === 0 ? "long" : "short");
-      } else {
-        setPomodoroMode("focus");
+        pomodoroMode = "short";
+        pomodoroRemaining = pomodoroDuration("short");
+        pomodoroRunning = true;
+        pomodoroView = "running";
+        renderPomodoro();
+        runPomodoroTimer();
+        showToast("Focus complete");
+        return;
       }
-      showToast("Pomodoro complete");
+      pomodoroRunning = false;
+      pomodoroView = "idle";
+      pomodoroMode = "focus";
+      pomodoroRemaining = pomodoroDuration("focus");
+      renderPomodoro();
+      showToast("Break complete");
     }
 
     function togglePomodoro() {
-      pomodoroRunning = !pomodoroRunning;
-      clearInterval(pomodoroTimer);
-      if (pomodoroRunning) {
-        pomodoroTimer = setInterval(() => {
-          pomodoroRemaining = Math.max(0, pomodoroRemaining - 1);
-          renderPomodoro();
-          if (pomodoroRemaining === 0) completePomodoroRound();
-        }, 1000);
+      if (pomodoroView === "idle") {
+        startPomodoro("focus");
+        return;
       }
+      pomodoroRunning = !pomodoroRunning;
       renderPomodoro();
+      runPomodoroTimer();
     }
 
     function resetPomodoro() {
       pomodoroRunning = false;
       clearInterval(pomodoroTimer);
-      pomodoroRemaining = pomodoroDurations[pomodoroMode];
+      pomodoroView = "idle";
+      pomodoroMode = "focus";
+      pomodoroRemaining = pomodoroDuration("focus");
+      renderPomodoro();
+    }
+
+    function adjustPomodoroDuration(type, delta) {
+      if (type === "focus") {
+        pomodoroFocusMinutes = clamp(pomodoroFocusMinutes + delta, 5, 60);
+      } else {
+        pomodoroRestMinutes = clamp(pomodoroRestMinutes + delta, 1, 30);
+      }
+      if (pomodoroView === "idle") pomodoroRemaining = pomodoroDuration("focus");
       renderPomodoro();
     }
 
@@ -3559,12 +4035,14 @@
       }
       if (key === "3") {
         pomodoroMode = "short";
+        pomodoroView = "running";
         pomodoroRemaining = 0;
         renderPomodoro();
         completePomodoroRound();
         return;
       }
       if (key === "4") {
+        pomodoroView = "running";
         pomodoroRemaining = 10;
         renderPomodoro();
         showToast("10 seconds left");
@@ -3576,6 +4054,8 @@
       homeScreen.classList.add("hidden");
       appsScreen.classList.add("hidden");
       galleryScreen.classList.add("hidden");
+      weatherScreen.classList.add("hidden");
+      countdownScreen.classList.add("hidden");
       pomodoroScreen.classList.add("hidden");
       transferScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
@@ -3587,6 +4067,8 @@
       homeScreen.classList.add("hidden");
       booksScreen.classList.add("hidden");
       galleryScreen.classList.add("hidden");
+      weatherScreen.classList.add("hidden");
+      countdownScreen.classList.add("hidden");
       pomodoroScreen.classList.add("hidden");
       transferScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
@@ -3697,6 +4179,8 @@
       homeScreen.classList.add("hidden");
       booksScreen.classList.add("hidden");
       appsScreen.classList.add("hidden");
+      weatherScreen.classList.add("hidden");
+      countdownScreen.classList.add("hidden");
       pomodoroScreen.classList.add("hidden");
       transferScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
@@ -3706,14 +4190,343 @@
       renderGallery();
     }
 
+    function showWeatherContent() {
+      weatherWifiState.classList.remove("show");
+      weatherWifiState.innerHTML = "";
+      weatherContent.classList.remove("hidden");
+    }
+
+    function renderAppWifiList(target) {
+      const panel = target === "weather" ? weatherWifiState : countdownWifiState;
+      const attr = target === "weather" ? "weather" : "countdown";
+      const pageSize = 6;
+      const totalPages = Math.max(1, Math.ceil(wifiNetworks.length / pageSize));
+      wifiPage = Math.min(wifiPage, totalPages);
+      const start = (wifiPage - 1) * pageSize;
+      panel.innerHTML = `
+        <section class="wifi-card">
+          <h2>Choose Wi-Fi</h2>
+          <div class="wifi-list">
+            ${wifiNetworks.slice(start, start + pageSize).map((network) => `
+              <button type="button" class="wifi-option ${network.ssid === selectedWifiSsid ? "selected" : ""}" data-${attr}-ssid="${network.ssid}">
+                <span>${network.ssid}</span>${signalMarkup(network.signal)}
+              </button>
+            `).join("")}
+          </div>
+          <footer class="wifi-pager ${wifiNetworks.length > pageSize ? "show" : ""}">
+            <button type="button" class="pager-button prev" data-${attr}-wifi-page="prev" aria-label="Previous page" ${wifiPage === 1 ? "disabled" : ""}></button>
+            <div class="page-count">${wifiPage} / ${totalPages}</div>
+            <button type="button" class="pager-button next" data-${attr}-wifi-page="next" aria-label="Next page" ${wifiPage === totalPages ? "disabled" : ""}></button>
+          </footer>
+        </section>
+      `;
+    }
+
+    function renderAppWifiPassword(target) {
+      const panel = target === "weather" ? weatherWifiState : countdownWifiState;
+      const attr = target === "weather" ? "weather" : "countdown";
+      const network = wifiNetworks.find((item) => item.ssid === selectedWifiSsid) || baseWifiNetworks[0];
+      panel.innerHTML = `
+        <section class="wifi-card">
+          <h2>Password</h2>
+          <div class="selected-network"><span>${network.ssid}</span>${signalMarkup(network.signal)}</div>
+          <div class="wifi-form">
+            <label class="wifi-field">Password<input value="${escapeAttribute(transferWifiPasswordValue)}" readonly autocomplete="off"></label>
+            <button type="button" class="wifi-connect" data-${attr}-connect>Connect</button>
+          </div>
+          <div class="soft-keyboard" aria-label="Keyboard">${keyboardMarkup().replaceAll("data-transfer-key", `data-${attr}-key`)}</div>
+        </section>
+      `;
+    }
+
+    function renderAppWifiState(target, copy) {
+      const panel = target === "weather" ? weatherWifiState : countdownWifiState;
+      const content = target === "weather" ? weatherContent : countdownContent;
+      const attr = target === "weather" ? "weather" : "countdown";
+      content.classList.add("hidden");
+      panel.classList.add("show");
+      if (transferFlowState === "wifiList") {
+        renderAppWifiList(target);
+        return;
+      }
+      if (transferFlowState === "wifiPassword") {
+        renderAppWifiPassword(target);
+        return;
+      }
+      const states = {
+        noWifi: {
+          title: "Wi-Fi Required",
+          copy,
+          actionClass: "single",
+          actions: `<button type="button" class="state-action primary" data-${attr}-state-action="chooseWifi">Choose Wi-Fi</button>`
+        },
+        noWifiFound: {
+          title: "No Wi-Fi Found",
+          copy: "No available Wi-Fi networks were found.",
+          actionClass: "single",
+          actions: `<button type="button" class="state-action primary" data-${attr}-state-action="rescanWifi">Rescan</button>`
+        },
+        connecting: {
+          title: "Connecting Wi-Fi",
+          copy: transferWifiSsid,
+          meta: "<span></span>",
+          className: "connecting"
+        },
+        failed: {
+          title: "Wi-Fi Failed",
+          copy: `${transferWifiSsid} failed. Check password or choose another network.`,
+          actions: `
+            <button type="button" class="state-action primary" data-${attr}-state-action="retry">Retry</button>
+            <button type="button" class="state-action" data-${attr}-state-action="chooseWifi">Choose Wi-Fi</button>
+          `
+        }
+      };
+      const current = states[transferFlowState] || states.noWifi;
+      panel.innerHTML = `
+        <div class="state-card ${current.className || ""}">
+          <div class="state-icon" aria-hidden="true"></div>
+          <h2>${current.title}</h2>
+          <p>${current.copy}</p>
+          ${current.meta ? `<div class="state-meta">${current.meta}</div>` : ""}
+          ${current.actions ? `<div class="state-actions ${current.actionClass || ""}">${current.actions}</div>` : ""}
+        </div>
+      `;
+    }
+
+    function simulateAppWifiScenario(target, state) {
+      transferFlowState = state;
+      clearTimeout(wifiTimer);
+      if (state === "connected") {
+        if (target === "weather") {
+          showWeatherContent();
+          showToast("Weather updated");
+        } else {
+          completeCountdownRefresh();
+        }
+        return;
+      }
+      if (state === "failed") showToast("Wi-Fi failed");
+      renderAppWifiState(target, target === "weather" ? "Connect Wi-Fi to update weather." : "Connect Wi-Fi to update countdowns.");
+    }
+
+    function chooseAppWifi(target) {
+      transferFlowState = "wifiList";
+      wifiNetworks = baseWifiNetworks;
+      wifiPage = 1;
+      selectedWifiSsid = "";
+      transferWifiPasswordValue = "";
+      keyboardLayer = "lower";
+      renderAppWifiState(target, target === "weather" ? "Connect Wi-Fi to update weather." : "Connect Wi-Fi to update countdowns.");
+    }
+
+    function retryAppWifi(target) {
+      if (selectedWifiSsid) transferWifiSsid = selectedWifiSsid;
+      transferFlowState = "connecting";
+      renderAppWifiState(target, target === "weather" ? "Connect Wi-Fi to update weather." : "Connect Wi-Fi to update countdowns.");
+      clearTimeout(wifiTimer);
+      wifiTimer = setTimeout(() => {
+        showToast("Wi-Fi connected");
+        wifiTimer = setTimeout(() => simulateAppWifiScenario(target, "connected"), 900);
+      }, 800);
+    }
+
+    function handleAppWifiPanelClick(event, target) {
+      const attr = target === "weather" ? "weather" : "countdown";
+      const action = event.target.closest(`[data-${attr}-state-action]`);
+      if (action) {
+        const value = action.dataset[`${attr}StateAction`];
+        if (value === "retry") retryAppWifi(target);
+        if (value === "chooseWifi" || value === "rescanWifi") chooseAppWifi(target);
+        return true;
+      }
+      const pageButton = event.target.closest(`[data-${attr}-wifi-page]`);
+      if (pageButton) {
+        const totalPages = Math.max(1, Math.ceil(wifiNetworks.length / 6));
+        if (pageButton.dataset[`${attr}WifiPage`] === "prev" && wifiPage > 1) wifiPage -= 1;
+        if (pageButton.dataset[`${attr}WifiPage`] === "next" && wifiPage < totalPages) wifiPage += 1;
+        renderAppWifiList(target);
+        return true;
+      }
+      const wifiOption = event.target.closest(`[data-${attr}-ssid]`);
+      if (wifiOption) {
+        selectedWifiSsid = wifiOption.dataset[`${attr}Ssid`];
+        transferWifiSsid = selectedWifiSsid;
+        transferWifiPasswordValue = "";
+        keyboardLayer = "lower";
+        transferFlowState = "wifiPassword";
+        renderAppWifiState(target, target === "weather" ? "Connect Wi-Fi to update weather." : "Connect Wi-Fi to update countdowns.");
+        return true;
+      }
+      const keyButton = event.target.closest(`[data-${attr}-key]`);
+      if (keyButton) {
+        const value = keyButton.dataset[`${attr}Key`];
+        if (value === "Del") transferWifiPasswordValue = transferWifiPasswordValue.slice(0, -1);
+        else if (value === "Shift") keyboardLayer = keyboardLayer === "upper" ? "lower" : "upper";
+        else if (value === "ABC") keyboardLayer = "lower";
+        else if (value === "?123") keyboardLayer = "symbol";
+        else transferWifiPasswordValue += value;
+        renderAppWifiPassword(target);
+        return true;
+      }
+      if (event.target.closest(`[data-${attr}-connect]`)) {
+        if (!selectedWifiSsid) return true;
+        retryAppWifi(target);
+        return true;
+      }
+      return false;
+    }
+
+    function showCountdownContent() {
+      countdownWifiState.classList.remove("show");
+      countdownWifiState.innerHTML = "";
+      countdownContent.classList.remove("hidden");
+    }
+
+    function renderCountdownWifiList() {
+      renderAppWifiList("countdown");
+    }
+
+    function renderCountdownWifiPassword() {
+      const network = wifiNetworks.find((item) => item.ssid === selectedWifiSsid) || baseWifiNetworks[0];
+      countdownWifiState.innerHTML = `
+        <section class="wifi-card">
+          <h2>Password</h2>
+          <div class="selected-network"><span>${network.ssid}</span>${signalMarkup(network.signal)}</div>
+          <div class="wifi-form">
+            <label class="wifi-field">Password<input value="${escapeAttribute(transferWifiPasswordValue)}" readonly autocomplete="off"></label>
+            <button type="button" class="wifi-connect" data-countdown-connect>Connect</button>
+          </div>
+          <div class="soft-keyboard" aria-label="Keyboard">${keyboardMarkup().replaceAll("data-transfer-key", "data-countdown-key")}</div>
+        </section>
+      `;
+    }
+
+    function renderCountdownWifiState() {
+      countdownContent.classList.add("hidden");
+      countdownWifiState.classList.add("show");
+      if (transferFlowState === "wifiList") {
+        renderCountdownWifiList();
+        return;
+      }
+      if (transferFlowState === "wifiPassword") {
+        renderCountdownWifiPassword();
+        return;
+      }
+      const states = {
+        noWifi: {
+          title: "Wi-Fi Required",
+          copy: "Connect Wi-Fi to update countdowns.",
+          actionClass: "single",
+          actions: `<button type="button" class="state-action primary" data-countdown-state-action="chooseWifi">Choose Wi-Fi</button>`
+        },
+        noWifiFound: {
+          title: "No Wi-Fi Found",
+          copy: "No available Wi-Fi networks were found.",
+          actionClass: "single",
+          actions: `<button type="button" class="state-action primary" data-countdown-state-action="rescanWifi">Rescan</button>`
+        },
+        connecting: {
+          title: "Connecting Wi-Fi",
+          copy: transferWifiSsid,
+          meta: "<span></span>",
+          className: "connecting"
+        },
+        failed: {
+          title: "Wi-Fi Failed",
+          copy: `${transferWifiSsid} failed. Check password or choose another network.`,
+          actions: `
+            <button type="button" class="state-action primary" data-countdown-state-action="retry">Retry</button>
+            <button type="button" class="state-action" data-countdown-state-action="chooseWifi">Choose Wi-Fi</button>
+          `
+        }
+      };
+      const current = states[transferFlowState] || states.noWifi;
+      countdownWifiState.innerHTML = `
+        <div class="state-card ${current.className || ""}">
+          <div class="state-icon" aria-hidden="true"></div>
+          <h2>${current.title}</h2>
+          <p>${current.copy}</p>
+          ${current.meta ? `<div class="state-meta">${current.meta}</div>` : ""}
+          ${current.actions ? `<div class="state-actions ${current.actionClass || ""}">${current.actions}</div>` : ""}
+        </div>
+      `;
+    }
+
+    function completeCountdownRefresh() {
+      transferFlowState = "connected";
+      showCountdownContent();
+      showToast("Updated");
+    }
+
+    function retryCountdownWifi() {
+      if (selectedWifiSsid) transferWifiSsid = selectedWifiSsid;
+      transferFlowState = "connecting";
+      renderCountdownWifiState();
+      clearTimeout(wifiTimer);
+      wifiTimer = setTimeout(() => {
+        showToast("Wi-Fi connected");
+        wifiTimer = setTimeout(completeCountdownRefresh, 900);
+      }, 800);
+    }
+
+    function chooseCountdownWifi() {
+      transferFlowState = "wifiList";
+      wifiNetworks = baseWifiNetworks;
+      wifiPage = 1;
+      selectedWifiSsid = "";
+      transferWifiPasswordValue = "";
+      keyboardLayer = "lower";
+      renderCountdownWifiState();
+    }
+
+    function refreshCountdowns() {
+      clearTimeout(wifiTimer);
+      if (transferFlowState === "connected") {
+        completeCountdownRefresh();
+        return;
+      }
+      if (transferFlowState === "failed") showToast("Wi-Fi failed");
+      renderCountdownWifiState();
+    }
+
+    function showCountdownScreen() {
+      homeScreen.classList.add("hidden");
+      booksScreen.classList.add("hidden");
+      appsScreen.classList.add("hidden");
+      galleryScreen.classList.add("hidden");
+      weatherScreen.classList.add("hidden");
+      pomodoroScreen.classList.add("hidden");
+      transferScreen.classList.add("hidden");
+      wifiScreen.classList.add("hidden");
+      readerScreen.classList.add("hidden");
+      countdownScreen.classList.remove("hidden");
+      showCountdownContent();
+    }
+
+    function showWeatherScreen() {
+      homeScreen.classList.add("hidden");
+      booksScreen.classList.add("hidden");
+      appsScreen.classList.add("hidden");
+      galleryScreen.classList.add("hidden");
+      pomodoroScreen.classList.add("hidden");
+      transferScreen.classList.add("hidden");
+      wifiScreen.classList.add("hidden");
+      readerScreen.classList.add("hidden");
+      weatherScreen.classList.remove("hidden");
+      showWeatherContent();
+    }
+
     function showPomodoroScreen() {
       homeScreen.classList.add("hidden");
       booksScreen.classList.add("hidden");
       appsScreen.classList.add("hidden");
       galleryScreen.classList.add("hidden");
+      weatherScreen.classList.add("hidden");
+      countdownScreen.classList.add("hidden");
       transferScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
       readerScreen.classList.add("hidden");
+      weatherScreen.classList.add("hidden");
       pomodoroScreen.classList.remove("hidden");
       renderPomodoro();
     }
@@ -3722,9 +4535,13 @@
       booksScreen.classList.add("hidden");
       appsScreen.classList.add("hidden");
       galleryScreen.classList.add("hidden");
+      weatherScreen.classList.add("hidden");
+      countdownScreen.classList.add("hidden");
       pomodoroScreen.classList.add("hidden");
       transferScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
+      weatherScreen.classList.add("hidden");
+      countdownScreen.classList.add("hidden");
       readerScreen.classList.add("hidden");
       homeScreen.classList.remove("hidden");
       clearTimeout(wifiTimer);
@@ -3736,8 +4553,12 @@
       booksScreen.classList.add("hidden");
       appsScreen.classList.add("hidden");
       galleryScreen.classList.add("hidden");
+      weatherScreen.classList.add("hidden");
+      countdownScreen.classList.add("hidden");
       pomodoroScreen.classList.add("hidden");
       wifiScreen.classList.add("hidden");
+      weatherScreen.classList.add("hidden");
+      countdownScreen.classList.add("hidden");
       readerScreen.classList.add("hidden");
       transferScreen.classList.remove("hidden");
     }
@@ -4199,6 +5020,32 @@
         simulatePomodoroScenario(event.key);
         return;
       }
+      const appWifiKeys = { "4": "noWifiFound", "5": "connected", "6": "noWifi", "7": "connecting", "8": "failed", "9": "wifiList" };
+      if (!weatherScreen.classList.contains("hidden") && Object.prototype.hasOwnProperty.call(appWifiKeys, event.key)) {
+        if (event.key === "9") {
+          wifiNetworks = baseWifiNetworks;
+          wifiPage = 1;
+          selectedWifiSsid = "";
+        }
+        simulateAppWifiScenario("weather", appWifiKeys[event.key]);
+        return;
+      }
+      if (!countdownScreen.classList.contains("hidden") && Object.prototype.hasOwnProperty.call(appWifiKeys, event.key)) {
+        if (event.key === "9") {
+          wifiNetworks = baseWifiNetworks;
+          wifiPage = 1;
+          selectedWifiSsid = "";
+        }
+        simulateAppWifiScenario("countdown", appWifiKeys[event.key]);
+        return;
+      }
+      if ((!weatherScreen.classList.contains("hidden") || !countdownScreen.classList.contains("hidden")) && transferFlowState === "wifiList" && event.key === "2") {
+        wifiNetworks = manyWifiNetworks;
+        wifiPage = 1;
+        if (!weatherScreen.classList.contains("hidden")) renderAppWifiList("weather");
+        if (!countdownScreen.classList.contains("hidden")) renderAppWifiList("countdown");
+        return;
+      }
       if (!wifiScreen.classList.contains("hidden") && event.key === "2") {
         setWifiNetworks(manyWifiNetworks);
         return;
@@ -4317,11 +5164,60 @@
       renderGallery();
     });
     backFromPomodoro.addEventListener("click", showAppsScreen);
+    backFromWeather.addEventListener("click", showAppsScreen);
+    backFromCountdown.addEventListener("click", showAppsScreen);
+    countdownRefresh.addEventListener("click", refreshCountdowns);
+    weatherWifiState.addEventListener("click", (event) => {
+      handleAppWifiPanelClick(event, "weather");
+    });
+    countdownWifiState.addEventListener("click", (event) => {
+      const action = event.target.closest("[data-countdown-state-action]");
+      if (action) {
+        if (action.dataset.countdownStateAction === "retry") retryCountdownWifi();
+        if (action.dataset.countdownStateAction === "chooseWifi") chooseCountdownWifi();
+        if (action.dataset.countdownStateAction === "rescanWifi") chooseCountdownWifi();
+        return;
+      }
+      const pageButton = event.target.closest("[data-countdown-wifi-page]");
+      if (pageButton) {
+        const totalPages = Math.max(1, Math.ceil(wifiNetworks.length / 6));
+        if (pageButton.dataset.countdownWifiPage === "prev" && wifiPage > 1) wifiPage -= 1;
+        if (pageButton.dataset.countdownWifiPage === "next" && wifiPage < totalPages) wifiPage += 1;
+        renderCountdownWifiList();
+        return;
+      }
+      const wifiOption = event.target.closest("[data-countdown-ssid]");
+      if (wifiOption) {
+        selectedWifiSsid = wifiOption.dataset.countdownSsid;
+        transferWifiSsid = selectedWifiSsid;
+        transferWifiPasswordValue = "";
+        keyboardLayer = "lower";
+        transferFlowState = "wifiPassword";
+        renderCountdownWifiState();
+        return;
+      }
+      const keyButton = event.target.closest("[data-countdown-key]");
+      if (keyButton) {
+        const value = keyButton.dataset.countdownKey;
+        if (value === "Del") transferWifiPasswordValue = transferWifiPasswordValue.slice(0, -1);
+        else if (value === "Shift") keyboardLayer = keyboardLayer === "upper" ? "lower" : "upper";
+        else if (value === "ABC") keyboardLayer = "lower";
+        else if (value === "?123") keyboardLayer = "symbol";
+        else transferWifiPasswordValue += value;
+        renderCountdownWifiPassword();
+        return;
+      }
+      if (event.target.closest("[data-countdown-connect]")) {
+        if (!selectedWifiSsid) return;
+        retryCountdownWifi();
+      }
+    });
     backFromTransfer.addEventListener("click", showHomeScreen);
-    pomodoroStart.addEventListener("click", togglePomodoro);
+    pomodoroStart.addEventListener("click", () => startPomodoro("focus"));
+    pomodoroPause.addEventListener("click", togglePomodoro);
     pomodoroReset.addEventListener("click", resetPomodoro);
-    pomodoroTabs.forEach((tab) => {
-      tab.addEventListener("click", () => setPomodoroMode(tab.dataset.pomodoroMode));
+    document.querySelectorAll("[data-pomodoro-step]").forEach((button) => {
+      button.addEventListener("click", () => adjustPomodoroDuration(button.dataset.pomodoroStep, Number(button.dataset.delta)));
     });
     transferStatePanel.addEventListener("click", (event) => {
       const action = event.target.closest("[data-transfer-state-action]");
@@ -4802,6 +5698,14 @@
         }
         if (button.dataset.app === "gallery") {
           showGalleryScreen();
+          return;
+        }
+        if (button.dataset.app === "weather") {
+          showWeatherScreen();
+          return;
+        }
+        if (button.dataset.app === "countdown") {
+          showCountdownScreen();
           return;
         }
         showToast(`${button.textContent.trim()} opened`);
