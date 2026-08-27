@@ -1298,32 +1298,34 @@
     .type-panel .type-row {
       min-height: 42px;
     }
-    .type-row.size-row {
-      display: grid;
-      grid-template-columns: 64px 1fr 36px;
-      align-items: center;
-      min-height: 76px;
-      padding: 6px 0;
+    .size-panel {
+      width: 480px;
+      height: 254px;
+      left: 0;
+      right: 0;
+      top: auto;
+      bottom: 0;
+      padding: 8px 22px 18px;
+      grid-template-rows: 42px 56px 1fr;
+      box-shadow: 0 -2px 0 var(--ink);
     }
-    .size-control {
-      min-width: 0;
+    .size-panel.show {
       display: grid;
-      gap: 6px;
     }
     .size-options {
       display: grid;
       grid-template-columns: repeat(11, 1fr);
       align-items: center;
-      gap: 0;
+      gap: 2px;
     }
     .size-option {
       min-width: 0;
-      height: 32px;
+      height: 40px;
       border: 0;
       border-radius: 4px;
       background: transparent;
       color: var(--ink);
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 760;
       font-variant-numeric: tabular-nums;
       font-family: inherit;
@@ -1333,12 +1335,14 @@
       color: var(--white);
     }
     .size-preview {
-      height: 28px;
+      min-height: 76px;
       overflow: hidden;
       color: var(--gray-1);
-      font-size: 18px;
-      line-height: 28px;
+      line-height: 1.3;
       white-space: nowrap;
+      align-self: center;
+      border-top: 2px solid var(--gray-4);
+      padding-top: 16px;
     }
     .size-value {
       width: 34px;
@@ -4136,19 +4140,18 @@
       <section class="reader-panel type-panel" id="typePanel" aria-label="Typography">
         <button type="button" class="panel-back" data-reader-back aria-label="Back"></button>
         <div class="type-row"><span>Font</span><button type="button" data-type-panel="font" id="fontValue">Serif</button></div>
-        <div class="type-row size-row">
-          <span>Size</span>
-          <div class="size-control">
-            <div class="size-options" id="sizeOptions" aria-label="Text size"></div>
-            <div class="size-preview" id="sizePreview">Reading preview text</div>
-          </div>
-          <span class="size-value" id="sizeValue">5</span>
-        </div>
+        <div class="type-row"><span>Size</span><button type="button" data-type-panel="size" id="sizeValue">5</button></div>
         <div class="type-row"><span>Focus Mode</span><button type="button" data-type-toggle="focusMode" id="focusModeValue">Off</button></div>
         <div class="type-row"><span>Line</span><span class="stepper"><button type="button" data-step="lineSpacing" data-delta="-1">−</button><span id="lineValue">3</span><button type="button" data-step="lineSpacing" data-delta="1">+</button></span></div>
         <div class="type-row"><span>Margin</span><span class="stepper"><button type="button" data-step="pageMargin" data-delta="-1">−</button><span id="marginValue">3</span><button type="button" data-step="pageMargin" data-delta="1">+</button></span></div>
         <div class="type-row"><span>Paragraph</span><span class="stepper"><button type="button" data-step="paragraphSpacing" data-delta="-1">−</button><span id="paragraphValue">3</span><button type="button" data-step="paragraphSpacing" data-delta="1">+</button></span></div>
         <div class="type-row"><span>Underline</span><button type="button" data-type-toggle="underline" id="typeUnderlineValue">Off</button></div>
+      </section>
+      <section class="reader-panel size-panel" id="sizePanel" aria-label="Text size">
+        <button type="button" class="panel-back" id="sizePanelBack" aria-label="Back"></button>
+        <div class="panel-head"><span>Size</span><span class="size-value" id="sizeDetailValue">5</span></div>
+        <div class="size-options" id="sizeOptions" aria-label="Text size"></div>
+        <div class="size-preview" id="sizePreview">Reading preview text</div>
       </section>
       <section class="reader-panel font-panel" id="fontPanel" aria-label="Font">
         <button type="button" class="panel-back" id="fontPanelBack" aria-label="Back"></button>
@@ -4477,6 +4480,8 @@
     const readerProgress = document.getElementById("readerProgress");
     const readerProgressFill = document.getElementById("readerProgressFill");
     const typePanel = document.getElementById("typePanel");
+    const sizePanel = document.getElementById("sizePanel");
+    const sizePanelBack = document.getElementById("sizePanelBack");
     const fontPanel = document.getElementById("fontPanel");
     const fontPanelBack = document.getElementById("fontPanelBack");
     const fontList = document.getElementById("fontList");
@@ -4502,6 +4507,7 @@
     const numPad = document.getElementById("numPad");
     const fontValue = document.getElementById("fontValue");
     const sizeValue = document.getElementById("sizeValue");
+    const sizeDetailValue = document.getElementById("sizeDetailValue");
     const sizeOptions = document.getElementById("sizeOptions");
     const sizePreview = document.getElementById("sizePreview");
     const focusModeValue = document.getElementById("focusModeValue");
@@ -4664,7 +4670,7 @@
 
     function applyReaderChromeOrientation() {
       const rotation = readerRotationTransform();
-      const rotatedPanels = [typePanel, fontPanel, contentsPanel, settingsPanel, autoPanel, gotoPanel];
+      const rotatedPanels = [typePanel, sizePanel, fontPanel, contentsPanel, settingsPanel, autoPanel, gotoPanel];
       readerActions.style.transform = rotation;
       rotatedPanels.forEach((panel) => {
         panel.style.transform = rotation;
@@ -4760,6 +4766,7 @@
       });
       fontValue.textContent = readerPrefs.font;
       sizeValue.textContent = readerPrefs.size;
+      sizeDetailValue.textContent = readerPrefs.size;
       sizeOptions.innerHTML = readerSizeOptions.map((size) => `
         <button type="button" class="size-option ${size === readerPrefs.size ? "active" : ""}" data-size-option="${size}" aria-label="Size ${size}">${size}</button>
       `).join("");
@@ -4866,7 +4873,7 @@
 
     function hideReaderPanels() {
       activeReaderPanel = null;
-      [typePanel, fontPanel, contentsPanel, settingsPanel, autoPanel, gotoPanel].forEach((panel) => panel.classList.remove("show"));
+      [typePanel, sizePanel, fontPanel, contentsPanel, settingsPanel, autoPanel, gotoPanel].forEach((panel) => panel.classList.remove("show"));
     }
 
     function showMainReaderActions() {
@@ -4943,6 +4950,12 @@
         renderFontList();
         placeReaderPanelAtPoint(fontPanel, point, 260, 300);
         fontPanel.classList.add("show");
+      }
+      if (panelName === "size") {
+        sizePanel.style.left = "0px";
+        sizePanel.style.top = "auto";
+        sizePanel.style.bottom = "0px";
+        sizePanel.classList.add("show");
       }
       if (panelName === "contents") {
         activeContentsTab = "contents";
@@ -6883,6 +6896,15 @@
         readerPrefs[prop] = clamp(readerPrefs[prop] + Number(step.dataset.delta), 1, 5);
         renderReaderPage();
       }
+    });
+    sizePanel.addEventListener("click", (event) => {
+      const sizeOption = event.target.closest("[data-size-option]");
+      if (!sizeOption) return;
+      readerPrefs.size = Number(sizeOption.dataset.sizeOption);
+      renderReaderPage();
+    });
+    sizePanelBack.addEventListener("click", () => {
+      openReaderPanel("type", typePanelPoint);
     });
     fontPanel.addEventListener("click", (event) => {
       const option = event.target.closest("[data-font-option]");
