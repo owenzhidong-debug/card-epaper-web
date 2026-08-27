@@ -1310,34 +1310,35 @@
       display: grid;
       gap: 6px;
     }
-    .size-slider {
-      width: 100%;
-      height: 30px;
-      margin: 0;
-      accent-color: var(--ink);
-    }
-    .size-scale,
-    .size-labels {
+    .size-options {
       display: grid;
       grid-template-columns: repeat(11, 1fr);
       align-items: center;
-      color: var(--gray-2);
-      font-size: 11px;
-      line-height: 1;
-      font-weight: 720;
-      text-align: center;
+      gap: 0;
+    }
+    .size-option {
+      min-width: 0;
+      height: 32px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 760;
       font-variant-numeric: tabular-nums;
+      font-family: inherit;
     }
-    .size-labels {
-      grid-template-columns: repeat(3, 1fr);
-      font-size: 12px;
-      text-align: initial;
+    .size-option.active {
+      background: var(--ink);
+      color: var(--white);
     }
-    .size-labels span:nth-child(2) {
-      text-align: center;
-    }
-    .size-labels span:last-child {
-      text-align: right;
+    .size-preview {
+      height: 28px;
+      overflow: hidden;
+      color: var(--gray-1);
+      font-size: 18px;
+      line-height: 28px;
+      white-space: nowrap;
     }
     .size-value {
       width: 34px;
@@ -4138,9 +4139,8 @@
         <div class="type-row size-row">
           <span>Size</span>
           <div class="size-control">
-            <input class="size-slider" id="sizeSlider" type="range" min="0" max="10" step="1" value="5" aria-label="Text size">
-            <div class="size-scale" aria-hidden="true"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
-            <div class="size-labels" aria-hidden="true"><span>Small</span><span>Standard</span><span>Large</span></div>
+            <div class="size-options" id="sizeOptions" aria-label="Text size"></div>
+            <div class="size-preview" id="sizePreview">Reading preview text</div>
           </div>
           <span class="size-value" id="sizeValue">5</span>
         </div>
@@ -4502,7 +4502,8 @@
     const numPad = document.getElementById("numPad");
     const fontValue = document.getElementById("fontValue");
     const sizeValue = document.getElementById("sizeValue");
-    const sizeSlider = document.getElementById("sizeSlider");
+    const sizeOptions = document.getElementById("sizeOptions");
+    const sizePreview = document.getElementById("sizePreview");
     const focusModeValue = document.getElementById("focusModeValue");
     const lineValue = document.getElementById("lineValue");
     const paragraphValue = document.getElementById("paragraphValue");
@@ -4566,6 +4567,7 @@
       ["Chapter 6 Ending", 18]
     ];
     const readerFontOptions = ["Sans", "Serif", "Mono", "Bold Sans"];
+    const readerSizeOptions = Array.from({ length: 11 }, (_, index) => index);
     const readerAlignOptions = ["Left", "Center", "Right", "Justify"];
     const readerAutoOptions = ["Off", "5page/min", "10page/min", "15page/min"];
     const readerDirectionOptions = ["Portrait", "Landscape CW", "Reverse Portrait", "Landscape CCW"];
@@ -4736,11 +4738,12 @@
         "Bold Sans": "Arial, Helvetica, sans-serif"
       };
       const marginMap = { 1: 10, 2: 14, 3: 18, 4: 24, 5: 30 };
+      const sizePx = 13 + Number(readerPrefs.size);
       readerScreen.style.background = readerPrefs.darkMode ? "var(--ink)" : "var(--white)";
       readerText.style.color = readerPrefs.darkMode ? "var(--white)" : "var(--ink)";
       readerText.style.fontFamily = fontMap[readerPrefs.font];
       readerText.style.fontWeight = readerPrefs.font === "Bold Sans" ? "760" : "400";
-      readerText.style.fontSize = `${13 + Number(readerPrefs.size)}px`;
+      readerText.style.fontSize = `${sizePx}px`;
       readerText.style.lineHeight = `${1.15 + readerPrefs.lineSpacing * .1}`;
       readerText.style.letterSpacing = `${(readerPrefs.letterSpacing - 1) * .015}em`;
       applyReaderOrientation(marginMap[readerPrefs.pageMargin]);
@@ -4757,7 +4760,12 @@
       });
       fontValue.textContent = readerPrefs.font;
       sizeValue.textContent = readerPrefs.size;
-      sizeSlider.value = readerPrefs.size;
+      sizeOptions.innerHTML = readerSizeOptions.map((size) => `
+        <button type="button" class="size-option ${size === readerPrefs.size ? "active" : ""}" data-size-option="${size}" aria-label="Size ${size}">${size}</button>
+      `).join("");
+      sizePreview.style.fontFamily = fontMap[readerPrefs.font];
+      sizePreview.style.fontWeight = readerPrefs.font === "Bold Sans" ? "760" : "400";
+      sizePreview.style.fontSize = `${sizePx}px`;
       focusModeValue.textContent = readerPrefs.focusMode ? "On" : "Off";
       lineValue.textContent = readerPrefs.lineSpacing;
       paragraphValue.textContent = readerPrefs.paragraphSpacing;
@@ -6863,16 +6871,18 @@
         renderReaderPage();
         return;
       }
+      const sizeOption = event.target.closest("[data-size-option]");
+      if (sizeOption) {
+        readerPrefs.size = Number(sizeOption.dataset.sizeOption);
+        renderReaderPage();
+        return;
+      }
       const step = event.target.closest("[data-step]");
       if (step) {
         const prop = step.dataset.step;
         readerPrefs[prop] = clamp(readerPrefs[prop] + Number(step.dataset.delta), 1, 5);
         renderReaderPage();
       }
-    });
-    sizeSlider.addEventListener("input", () => {
-      readerPrefs.size = Number(sizeSlider.value);
-      renderReaderPage();
     });
     fontPanel.addEventListener("click", (event) => {
       const option = event.target.closest("[data-font-option]");
