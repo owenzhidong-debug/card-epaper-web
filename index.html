@@ -1296,7 +1296,61 @@
       font-weight: 650;
     }
     .type-panel .type-row {
-      min-height: 48px;
+      min-height: 42px;
+    }
+    .type-row.size-row {
+      display: grid;
+      grid-template-columns: 64px 1fr 36px;
+      align-items: center;
+      min-height: 76px;
+      padding: 6px 0;
+    }
+    .size-control {
+      min-width: 0;
+      display: grid;
+      gap: 6px;
+    }
+    .size-slider {
+      width: 100%;
+      height: 30px;
+      margin: 0;
+      accent-color: var(--ink);
+    }
+    .size-scale,
+    .size-labels {
+      display: grid;
+      grid-template-columns: repeat(11, 1fr);
+      align-items: center;
+      color: var(--gray-2);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 720;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+    .size-labels {
+      grid-template-columns: repeat(3, 1fr);
+      font-size: 12px;
+      text-align: initial;
+    }
+    .size-labels span:nth-child(2) {
+      text-align: center;
+    }
+    .size-labels span:last-child {
+      text-align: right;
+    }
+    .size-value {
+      width: 34px;
+      height: 34px;
+      border: 2px solid var(--ink);
+      border-radius: 5px;
+      background: var(--ink);
+      color: var(--white);
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      font-weight: 760;
+      font-variant-numeric: tabular-nums;
     }
     .type-row button,
     .setting-row button {
@@ -4081,7 +4135,15 @@
       <section class="reader-panel type-panel" id="typePanel" aria-label="Typography">
         <button type="button" class="panel-back" data-reader-back aria-label="Back"></button>
         <div class="type-row"><span>Font</span><button type="button" data-type-panel="font" id="fontValue">Serif</button></div>
-        <div class="type-row"><span>Size</span><button type="button" data-type-cycle="size" id="sizeValue">Medium</button></div>
+        <div class="type-row size-row">
+          <span>Size</span>
+          <div class="size-control">
+            <input class="size-slider" id="sizeSlider" type="range" min="0" max="10" step="1" value="5" aria-label="Text size">
+            <div class="size-scale" aria-hidden="true"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
+            <div class="size-labels" aria-hidden="true"><span>Small</span><span>Standard</span><span>Large</span></div>
+          </div>
+          <span class="size-value" id="sizeValue">5</span>
+        </div>
         <div class="type-row"><span>Focus Mode</span><button type="button" data-type-toggle="focusMode" id="focusModeValue">Off</button></div>
         <div class="type-row"><span>Line</span><span class="stepper"><button type="button" data-step="lineSpacing" data-delta="-1">−</button><span id="lineValue">3</span><button type="button" data-step="lineSpacing" data-delta="1">+</button></span></div>
         <div class="type-row"><span>Margin</span><span class="stepper"><button type="button" data-step="pageMargin" data-delta="-1">−</button><span id="marginValue">3</span><button type="button" data-step="pageMargin" data-delta="1">+</button></span></div>
@@ -4440,6 +4502,7 @@
     const numPad = document.getElementById("numPad");
     const fontValue = document.getElementById("fontValue");
     const sizeValue = document.getElementById("sizeValue");
+    const sizeSlider = document.getElementById("sizeSlider");
     const focusModeValue = document.getElementById("focusModeValue");
     const lineValue = document.getElementById("lineValue");
     const paragraphValue = document.getElementById("paragraphValue");
@@ -4503,7 +4566,6 @@
       ["Chapter 6 Ending", 18]
     ];
     const readerFontOptions = ["Sans", "Serif", "Mono", "Bold Sans"];
-    const readerSizeOptions = ["Small", "Medium", "Large"];
     const readerAlignOptions = ["Left", "Center", "Right", "Justify"];
     const readerAutoOptions = ["Off", "5page/min", "10page/min", "15page/min"];
     const readerDirectionOptions = ["Portrait", "Landscape CW", "Reverse Portrait", "Landscape CCW"];
@@ -4514,7 +4576,7 @@
     let pageInputValue = "";
     let readerPrefs = {
       font: "Serif",
-      size: "Medium",
+      size: 5,
       lineSpacing: 3,
       paragraphSpacing: 3,
       pageMargin: 3,
@@ -4673,13 +4735,12 @@
         Mono: "'Courier New', monospace",
         "Bold Sans": "Arial, Helvetica, sans-serif"
       };
-      const sizeMap = { Small: 16, Medium: 18, Large: 21 };
       const marginMap = { 1: 10, 2: 14, 3: 18, 4: 24, 5: 30 };
       readerScreen.style.background = readerPrefs.darkMode ? "var(--ink)" : "var(--white)";
       readerText.style.color = readerPrefs.darkMode ? "var(--white)" : "var(--ink)";
       readerText.style.fontFamily = fontMap[readerPrefs.font];
       readerText.style.fontWeight = readerPrefs.font === "Bold Sans" ? "760" : "400";
-      readerText.style.fontSize = `${sizeMap[readerPrefs.size]}px`;
+      readerText.style.fontSize = `${13 + Number(readerPrefs.size)}px`;
       readerText.style.lineHeight = `${1.15 + readerPrefs.lineSpacing * .1}`;
       readerText.style.letterSpacing = `${(readerPrefs.letterSpacing - 1) * .015}em`;
       applyReaderOrientation(marginMap[readerPrefs.pageMargin]);
@@ -4696,6 +4757,7 @@
       });
       fontValue.textContent = readerPrefs.font;
       sizeValue.textContent = readerPrefs.size;
+      sizeSlider.value = readerPrefs.size;
       focusModeValue.textContent = readerPrefs.focusMode ? "On" : "Off";
       lineValue.textContent = readerPrefs.lineSpacing;
       paragraphValue.textContent = readerPrefs.paragraphSpacing;
@@ -6801,21 +6863,16 @@
         renderReaderPage();
         return;
       }
-      const cycle = event.target.closest("[data-type-cycle]");
-      if (cycle) {
-        const key = cycle.dataset.typeCycle;
-        const options = readerSizeOptions;
-        const prop = key === "size" ? "size" : key;
-        readerPrefs[prop] = options[(options.indexOf(readerPrefs[prop]) + 1) % options.length];
-        renderReaderPage();
-        return;
-      }
       const step = event.target.closest("[data-step]");
       if (step) {
         const prop = step.dataset.step;
         readerPrefs[prop] = clamp(readerPrefs[prop] + Number(step.dataset.delta), 1, 5);
         renderReaderPage();
       }
+    });
+    sizeSlider.addEventListener("input", () => {
+      readerPrefs.size = Number(sizeSlider.value);
+      renderReaderPage();
     });
     fontPanel.addEventListener("click", (event) => {
       const option = event.target.closest("[data-font-option]");
