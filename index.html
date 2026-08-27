@@ -1274,9 +1274,14 @@
       transform: rotate(45deg);
     }
     .type-panel {
-      width: 308px;
-      height: 450px;
-      padding: 8px 14px 14px;
+      width: 480px;
+      height: 400px;
+      left: 0;
+      right: 0;
+      top: auto;
+      bottom: 0;
+      padding: 8px 22px 14px;
+      box-shadow: 0 -2px 0 var(--ink);
     }
     .type-row,
     .setting-row,
@@ -4858,7 +4863,9 @@
       activeReaderPanel = panelName;
       if (panelName === "type") {
         typePanelPoint = point;
-        placeReaderPanelAtPoint(typePanel, point, 308, 450);
+        typePanel.style.left = "0px";
+        typePanel.style.top = "auto";
+        typePanel.style.bottom = "0px";
         typePanel.classList.add("show");
       }
       if (panelName === "font") {
@@ -6724,7 +6731,7 @@
       }
       const rect = readerScreen.getBoundingClientRect();
       readerTapPoint = { x: event.clientX - rect.left, y: event.clientY - rect.top };
-      openReaderPanel("settings");
+      openReaderPanel("type");
     });
     readerClose.addEventListener("click", () => {
       window.location.reload();
